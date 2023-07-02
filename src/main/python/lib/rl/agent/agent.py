@@ -3,25 +3,28 @@ from abc import ABC, abstractmethod
 
 from lib.rl.environment import Environment
 
+S = typing.TypeVar("S")
+A = typing.TypeVar("A")
 
-class Agent(ABC):
+
+class Agent(ABC, typing.Generic[S, A]):
 
 	def __init__(self):
-		pass
+		self.__environment = None
 
-	def _get_environment(self) -> Environment:
+	def _get_environment(self) -> Environment[S, A]:
 		if self.__environment is None:
 			raise Exception("Environment Not Set.")
 		return self.__environment
 
-	def set_environment(self, environment: Environment):
+	def set_environment(self, environment: Environment[S, A]):
 		self.__environment = environment
 
-	def _is_episode_over(self, state) -> bool:
+	def _is_episode_over(self, state: S) -> bool:
 		return self._get_environment().is_episode_over(state)
 
 	@abstractmethod
-	def _policy(self, state) -> typing.Any:
+	def _policy(self, state: S) -> A:
 		pass
 
 	def perform_timestep(self):

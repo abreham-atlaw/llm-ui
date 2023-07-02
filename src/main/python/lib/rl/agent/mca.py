@@ -13,7 +13,6 @@ from .mba import ModelBasedAgent
 from lib.utils.math import sigmoid
 from lib.utils.staterepository import StateRepository, SectionalDictStateRepository
 from lib.utils.stm import ShortTermMemory, CueMemoryMatcher, ExactCueMemoryMatcher
-from temp import stats
 from ..environment import ModelBasedState
 
 
@@ -359,7 +358,6 @@ class MonteCarloAgent(ModelBasedAgent, ABC):
 
 		if self.__use_stm and stm and self.__expand_from_stm(state_node):
 			Logger.info("Recalled from STM")
-			Logger.info(f"Recall Depth: {stats.get_max_depth(state_node)}")
 			return
 
 		states, actions, final_states, possible_state_nodes = self.__collect_transition_inputs(state_node)
@@ -449,14 +447,12 @@ class MonteCarloAgent(ModelBasedAgent, ABC):
 
 		resources = self._init_resources()
 
-		stats.iterations["main_loop"] = 0
 		while self._has_resource(resources):
 			leaf_node = self._select(root_node)
 			self._expand(leaf_node, stm=False)
 			final_node = self.__simulate(leaf_node)
 			self._backpropagate(final_node)
 			self.__manage_resources()
-			stats.iterations["main_loop"] += 1
 
 	def _monte_carlo_tree_search(self, state) -> None:
 		root_node = MonteCarloAgent.Node(None, None, MonteCarloAgent.Node.NodeType.STATE)
@@ -465,11 +461,6 @@ class MonteCarloAgent(ModelBasedAgent, ABC):
 
 		self._monte_carlo_simulation(root_node)
 
-		Logger.info(
-			f"Simulations Done: Iterations: {stats.iterations['main_loop']}, "
-			f"Depth: {stats.get_max_depth(root_node)}, "
-			f"Nodes: {len(stats.get_nodes(root_node))}"
-		)
 		optimal_action = max(root_node.get_children(), key=lambda node: node.get_total_value()).action
 		Logger.info(f"Best Action {optimal_action}")
 		self.__finalize_step(root_node)
