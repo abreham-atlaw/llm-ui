@@ -12,6 +12,6 @@ class RunExecutor(ActionExecutor):
 	def execute(self, action: LLMUIAction) -> str:
 		command = self._parse_arg(action)
 		try:
-			return subprocess.check_output(command)
+			return subprocess.check_output(command, shell=True)
 		except Exception as ex:
 			return str(ex)
