@@ -16,3 +16,6 @@ class PoeLLM(LLM):
 		for response in self.__client.send_message(self.__bot_name, message):
 			pass
 		return response["text"]
+
+	def reset(self):
+		self.__client.send_chat_break(self.__bot_name)

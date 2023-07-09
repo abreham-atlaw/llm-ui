@@ -11,6 +11,7 @@ class LLMUIAgent(Agent[LLMUIState, LLMUIAction]):
 	def __init__(self, llm: LLM):
 		super().__init__()
 		self.__llm = llm
+		self.__llm.reset()
 
 	def _prepare_query(self, state: LLMUIState) -> str:
 		return f"""

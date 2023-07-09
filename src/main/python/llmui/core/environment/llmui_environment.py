@@ -1,3 +1,4 @@
+import os
 import typing
 from copy import deepcopy
 
@@ -14,10 +15,10 @@ class LLMUIEnvironment(Environment[LLMUIState, LLMUIAction]):
 		super().__init__(*args, **kwargs)
 		self.__working_dir = working_dir
 		self.__executor = ParentActionExecutor([
-			WriteExecutor(),
-			ReadExecutor(),
-			RunExecutor()
-		])
+			WriteExecutor(cwd=self.__working_dir),
+			ReadExecutor(cwd=self.__working_dir),
+			RunExecutor(cwd=self.__working_dir)
+		], cwd=self.__working_dir)
 
 		self.__state = LLMUIState([], "No previous Commands")
 
@@ -47,3 +48,8 @@ class LLMUIEnvironment(Environment[LLMUIState, LLMUIAction]):
 
 	def _get_reward(self, state: LLMUIState) -> float:
 		return 0
+
+	def _initialize(self):
+		super()._initialize()
+		os.chdir(self.__working_dir)
+

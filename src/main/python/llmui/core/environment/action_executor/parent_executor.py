@@ -6,7 +6,8 @@ from llmui.core.environment.action_executor import ActionExecutor
 
 class ParentActionExecutor(ActionExecutor):
 
-	def __init__(self, action_executors: typing.List[ActionExecutor]):
+	def __init__(self, action_executors: typing.List[ActionExecutor], *args, **kwargs):
+		super().__init__(*args, **kwargs)
 		self.__executors = action_executors
 
 	def __find_executor(self, action: LLMUIAction) -> typing.Optional[ActionExecutor]:
