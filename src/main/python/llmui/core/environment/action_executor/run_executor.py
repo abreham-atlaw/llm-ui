@@ -7,10 +7,10 @@ from llmui.core.environment.action_executor import ActionExecutor
 class RunExecutor(ActionExecutor):
 
 	def is_valid_action(self, action: LLMUIAction) -> bool:
-		return action.command.startswith("run ")
+		return action.command == "run"
 
 	def execute(self, action: LLMUIAction) -> str:
-		command = self._parse_arg(action)
+		command = action.args[0]
 		try:
 			return subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
 		except Exception as ex:

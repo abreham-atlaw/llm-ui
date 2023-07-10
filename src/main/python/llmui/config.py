@@ -8,5 +8,5 @@ LOGGING_CONSOLE = True
 LOGGING_FILE_PATH = os.path.join(BASE_DIR, "out.log")
 
 
-DEFAULT_BOT = "acouchy"
+DEFAULT_BOT = "capybara"
 POE_TOKEN = 'a-gQXUo1YjeC02xtdFr5dw%3D%3D'

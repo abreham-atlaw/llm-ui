@@ -5,7 +5,7 @@ from llmui.core.environment.action_executor import ActionExecutor
 class ReadExecutor(ActionExecutor):
 
 	def is_valid_action(self, action: LLMUIAction) -> bool:
-		return action.command.startswith("read ")
+		return action.command == "read"
 
 	@staticmethod
 	def __read(file_path: str) -> str:
@@ -14,5 +14,5 @@ class ReadExecutor(ActionExecutor):
 		return content
 
 	def execute(self, action: LLMUIAction) -> str:
-		file_path = self._parse_arg(action)
+		file_path = action.args[1]
 		return self.__read(file_path)

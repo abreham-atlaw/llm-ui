@@ -18,9 +18,6 @@ class ActionExecutor(ABC):
 	def _get_relative_path(self, path) -> str:
 		return os.path.join(self._get_cwd(), path)
 
-	def _parse_arg(self, action: LLMUIAction) -> str:
-		return " ".join(action.command.split(" ")[1:])
-
 	@abstractmethod
 	def is_valid_action(self, action: LLMUIAction) -> bool:
 		pass
