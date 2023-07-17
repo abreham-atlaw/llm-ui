@@ -23,7 +23,10 @@ class ParentActionExecutor(ActionExecutor):
 		executor = self.__find_executor(action)
 		if executor is None:
 			raise ExecutorNotFoundException(action)
-		return executor.execute(action)
+		try:
+			return executor.execute(action)
+		except Exception as ex:
+			return f"Error: {ex}"
 
 
 class ExecutorNotFoundException(Exception):

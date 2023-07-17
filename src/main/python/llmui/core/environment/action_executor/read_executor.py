@@ -14,5 +14,5 @@ class ReadExecutor(ActionExecutor):
 		return content
 
 	def execute(self, action: LLMUIAction) -> str:
-		file_path = action.args[1]
+		file_path = action.args[0]
 		return self.__read(file_path)

@@ -19,3 +19,15 @@ class PoeLLM(LLM):
 
 	def reset(self):
 		self.__client.send_chat_break(self.__bot_name)
+
+
+class GooglePaLM(PoeLLM):
+
+	def __init__(self, token: str):
+		super().__init__("acouchy", token)
+
+	def chat(self, message: str) -> str:
+		response = super().chat(message)
+		if "[user]" in response:
+			response = response[:response.find("[user]")]
+		return response

@@ -11,7 +11,19 @@ class RunExecutor(ActionExecutor):
 
 	def execute(self, action: LLMUIAction) -> str:
 		command = action.args[0]
-		try:
-			return subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
-		except Exception as ex:
-			return str(ex)
+		p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+		response = ""
+		while True:
+			output = p.stdout.readline()
+			if not output:
+				break
+			response = f"{output}\n"
+
+		while True:
+			err = p.stderr.readline()
+			if not err:
+				break
+			response = f"{err}"
+
+		return response
