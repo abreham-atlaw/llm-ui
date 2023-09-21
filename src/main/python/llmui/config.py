@@ -7,6 +7,6 @@ LOGGING_PID = True
 LOGGING_CONSOLE = True
 LOGGING_FILE_PATH = os.path.join(BASE_DIR, "out.log")
 
+OPENAI_KEY = "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"
 
-DEFAULT_BOT = "capybara"
-POE_TOKEN = 'a-gQXUo1YjeC02xtdFr5dw%3D%3D'
+GAI_URL = "https://llmchat-server.vercel.app/api/"

@@ -24,7 +24,7 @@ class Agent(ABC, typing.Generic[S, A]):
 		return self._get_environment().is_episode_over(state)
 
 	@abstractmethod
-	def _policy(self, state: S) -> A:
+	def _policy(self, state: S) -> typing.Optional[A]:
 		pass
 
 	def perform_timestep(self):

@@ -57,7 +57,7 @@ class Environment(ABC, Generic[S, A]):
 		return self._is_episode_over(state)
 
 	@Logger.logged_method
-	def do(self, action: A) -> float:
+	def do(self, action: typing.Optional[A]) -> float:
 		if not self.is_action_valid(action, self.get_state()):
 			raise ActionNotValidException()
 		self.perform_action(action)

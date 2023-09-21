@@ -17,9 +17,11 @@ class ParentActionExecutor(ActionExecutor):
 		return None
 
 	def is_valid_action(self, action: LLMUIAction) -> bool:
-		return self.__find_executor(action) != False
+		return action is None or self.__find_executor(action) is not False
 
-	def execute(self, action: LLMUIAction) -> str:
+	def execute(self, action: typing.Optional[LLMUIAction]) -> str:
+		if action is None:
+			return ""
 		executor = self.__find_executor(action)
 		if executor is None:
 			raise ExecutorNotFoundException(action)

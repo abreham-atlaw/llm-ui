@@ -1,29 +1,19 @@
 import subprocess
 
+from lib.runtime.runners.docker_runner import DockerRunner
 from llmui.core.environment.action import LLMUIAction
 from llmui.core.environment.action_executor import ActionExecutor
 
 
 class RunExecutor(ActionExecutor):
 
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.__runner = DockerRunner()
+
 	def is_valid_action(self, action: LLMUIAction) -> bool:
 		return action.command == "run"
 
 	def execute(self, action: LLMUIAction) -> str:
-		command = action.args[0]
-		p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		return self.__runner.run(self._get_cwd())
 
-		response = ""
-		while True:
-			output = p.stdout.readline()
-			if not output:
-				break
-			response = f"{output}\n"
-
-		while True:
-			err = p.stderr.readline()
-			if not err:
-				break
-			response = f"{err}"
-
-		return response

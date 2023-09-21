@@ -373,12 +373,12 @@ class MonteCarloAgent(ModelBasedAgent, ABC):
 			final_states[i].set_depth(node.depth)
 
 
-		# for action in self._get_available_actions(state):
+		# for action in self._get_available_actions(states):
 		#
 		# 	action_node = MonteCarloAgent.Node(state_node, action, MonteCarloAgent.Node.NodeType.ACTION)
 		# 	possible_states = self._get_possible_states(self._state_repository.retrieve(state_node.id), action)
 		# 	probability_distribution = self._get_expected_transition_probability_distribution(
-		# 		[state for _ in range(len(possible_states))],
+		# 		[states for _ in range(len(possible_states))],
 		# 		[action for _ in range(len(possible_states))],
 		# 		possible_states
 		# 	)

@@ -20,7 +20,13 @@ class LLMUIEnvironment(Environment[LLMUIState, LLMUIAction]):
 			RunExecutor(cwd=self.__working_dir)
 		], cwd=self.__working_dir)
 
-		self.__state = LLMUIState([], "No previous Commands")
+		self.__state = LLMUIState([], "No previous Commands", read_content=self.__read_file)
+
+	def __read_file(self, path) -> str:
+		return self.__executor(LLMUIAction(
+			command="read",
+			args=[path]
+		))
 
 	def perform_action(self, action: LLMUIAction):
 		new_state = deepcopy(self.get_state())
