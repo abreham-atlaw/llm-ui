@@ -1,11 +1,11 @@
-import os
 import re
+import typing
 
-from llmui.core.agent.directed.lib.executor import LLMExecutor, I, O
+from llmui.core.agent.directed.lib.executor import LLMExecutor
 from llmui.utils.format_utils import FormatUtils
 
 
-class DockerPrepExecutor(LLMExecutor[str, str]):
+class DockerPrepExecutor(LLMExecutor[typing.Tuple[str, typing.List[str]], str]):
 
 	@staticmethod
 	def __extract_first_code_block(text) -> str:
@@ -17,11 +17,14 @@ class DockerPrepExecutor(LLMExecutor[str, str]):
 			return code
 		return ""
 
-	def _prepare_prompt(self, arg: str) -> str:
+	def _prepare_prompt(self, arg: typing.Tuple[str, typing.List[str]]) -> str:
+		root_path, tech_stack = arg
 		return f"""
 Assume I have the folder structure below:
-{FormatUtils.tree(arg)}
-write a dockerfile that runs all the tests with fast fail ( if one of the tests fail it doesn't proceed to the next ) . 
+{FormatUtils.tree(root_path)}
+
+The project uses {', '.join(tech_stack)}.
+Write a dockerfile that runs all the tests with fast fail ( if one of the tests fail it doesn't proceed to the next ). 
 """
 
 	def _prepare_output(self, output: str, arg: str) -> str:

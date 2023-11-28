@@ -8,11 +8,14 @@ S = TypeVar("S")
 A = TypeVar("A")
 
 
-
 class Environment(ABC, Generic[S, A]):
 
 	def __init__(self, episodic=True):
 		self.episodic = episodic
+
+	@property
+	def state(self) -> S:
+		return self.get_state()
 
 	@abstractmethod
 	def _get_reward(self, state: S) -> float:

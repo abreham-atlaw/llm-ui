@@ -17,8 +17,8 @@ class ModifyExecutor(LLMExecutor[typing.Tuple[str, str, typing.List[str], typing
 			llm=self._llm,
 			output_format="""
 {
-"filename": "FILENAME"
-"description": \"\"\"DESCRIPTION\"\"\"
+"filename": "FILENAME" // file involved
+"description": \"\"\"DESCRIPTION\"\"\" //how to handle it
 }
 """
 		)

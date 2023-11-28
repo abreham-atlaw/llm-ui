@@ -11,9 +11,10 @@ from llmui.core.environment.action import LLMUIAction
 class LLMUIState:
 
     project_description: str
+    task: str
 
     action_stack: typing.List[LLMUIAction]
-    output: str
+    outputs: typing.List[str]
 
     read_content: typing.Callable
     root_path: str
@@ -27,3 +28,19 @@ class LLMUIState:
                 relative_path = os.path.relpath(file_path, self.root_path)
                 file_list.append(relative_path)
         return file_list
+
+    @property
+    def output(self) -> str:
+        if len(self.outputs) == 0:
+            return ""
+        return self.outputs[-1]
+
+    def __deepcopy__(self, memodict={}):
+        return LLMUIState(
+            project_description=self.project_description,
+            task=self.task,
+            action_stack=self.action_stack.copy(),
+            outputs=self.outputs.copy(),
+            read_content=self.read_content,
+            root_path=self.root_path
+        )

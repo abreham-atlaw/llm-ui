@@ -1,6 +1,6 @@
 import os
 
-from llmui.core.agent.directed_agent import DirectedAgent
+from llmui.core.agent.directed import DirectedAgent
 from llmui.core.agent.llmui_agent import LLMUIAgent
 from llmui.core.environment import LLMUIEnvironment
 from llmui.di import LLMProviders

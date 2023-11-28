@@ -6,10 +6,13 @@ from llmui.core.agent.directed.lib.internal_state import Stage, StagedInternalSt
 class DebugStage(Stage):
 	prep = 1
 	run = 2
-	error_extraction = 3
-	list_files = 4
-	modify = 5
-	done = 6
+	check_results = 3
+	check_stuck = 4
+	user_help = 5
+	error_extraction = 6
+	list_files = 7
+	modify = 8
+	done = 9
 
 
 @dataclass

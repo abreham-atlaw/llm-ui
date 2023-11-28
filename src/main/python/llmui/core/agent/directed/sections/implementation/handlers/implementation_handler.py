@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from llmui.core.agent.directed.lib.handler import MapHandler, Handler
 from llmui.core.agent.directed.lib.internal_state import Stage
+from llmui.core.agent.directed.sections.common.models import ProjectInfo
 from llmui.core.agent.directed.sections.implementation.executors.list_files_executor import ListFilesExecutor
 from llmui.core.agent.directed.sections.implementation.handlers.dependencies_handler import DependenciesHandler, \
 	DependenciesArgs
@@ -19,6 +20,7 @@ from llmui.core.environment import LLMUIState
 class ImplementationHandlerArgs:
 	mode: ListFilesExecutor.Mode
 	descriptions: typing.Dict[str, str]
+	project_info: ProjectInfo
 
 
 class ImplementationHandler(MapHandler[ImplementationState, ImplementationHandlerArgs]):
@@ -53,7 +55,8 @@ class ImplementationHandler(MapHandler[ImplementationState, ImplementationHandle
 	def __get_list_files_args(self, state: LLMUIState, args: ImplementationHandlerArgs) -> ListFilesHandlerArgs:
 		return ListFilesHandlerArgs(
 			args.mode,
-			args.descriptions
+			args.descriptions,
+			args.project_info
 		)
 
 	def __get_dependencies_args(self, state: LLMUIState, args: ImplementationHandlerArgs) -> DependenciesArgs:
@@ -66,7 +69,8 @@ class ImplementationHandler(MapHandler[ImplementationState, ImplementationHandle
 		return FilesImplementationArgs(
 			self.__list_files_handler.get_internal_state().files,
 			self.__dependencies_handler.get_internal_state().dependencies,
-			self.__list_files_handler.get_internal_state().descriptions
+			self.__list_files_handler.get_internal_state().descriptions,
+			args.project_info
 		)
 
 	def _get_args(self, state: LLMUIState, args: ImplementationHandlerArgs) -> typing.Any:

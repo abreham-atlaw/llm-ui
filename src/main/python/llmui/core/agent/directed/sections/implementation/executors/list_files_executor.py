@@ -6,7 +6,7 @@ from enum import Enum
 from llmui.core.agent.directed.lib.executor import LLMExecutor
 
 
-class ListFilesExecutor(LLMExecutor[typing.Tuple[str, typing.List[str], typing.Dict[str, str], 'ListFilesExecutor.Mode'], typing.Dict[str, str]]):
+class ListFilesExecutor(LLMExecutor[typing.Tuple[str, typing.List[str], typing.List[str], typing.Dict[str, str], 'ListFilesExecutor.Mode'], typing.Dict[str, str]]):
 
 	class Mode(Enum):
 		implement = 0
@@ -31,15 +31,18 @@ class ListFilesExecutor(LLMExecutor[typing.Tuple[str, typing.List[str], typing.D
 		if len(files) == 0:
 			return ""
 		return f"""
-Here are the list of files of implemented:
+Here are the list of files of implemented so far:
 {self.__generate_file_descriptions(files, descriptions)}
 """
 
-	def _prepare_prompt(self, arg: typing.Tuple[str, typing.List[str], typing.Dict[str, str], 'ListFilesExecutor.Mode']) -> str:
-		project_description, files, descriptions, mode = arg
+	def _prepare_prompt(self, arg: typing.Tuple[str, typing.List[str], typing.List[str], typing.Dict[str, str], 'ListFilesExecutor.Mode']) -> str:
+		project_description, tech_stack, files, descriptions, mode = arg
 		return f"""
 I would like it if you could help me on an app I was working on.
 {project_description}
+
+The project uses {', '.join(tech_stack)}.
+
 {self.__get_implemented_files(files, descriptions)}
 {self.__get_mode_query(mode)}
 1. lib/apps/auth/application/blocs/AuthBloc.dart: This file defines the AuthBloc class, which manages the authentication state of the app.
@@ -47,8 +50,7 @@ I would like it if you could help me on an app I was working on.
 Note: Only include files(not folders).
 """
 
-
-	def _prepare_output(self, output: str, arg: str) -> typing.Dict[str, str]:
+	def _prepare_output(self, output: str, arg: typing.Tuple[str, typing.List[str], typing.List[str], typing.Dict[str, str], 'ListFilesExecutor.Mode']) -> typing.Dict[str, str]:
 		text = output.replace("*", "").replace("`", "")
 		pattern = r'\d+\. (\S+): (.+)'
 		matches = re.findall(pattern, text)

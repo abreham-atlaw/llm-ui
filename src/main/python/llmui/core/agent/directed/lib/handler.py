@@ -26,6 +26,10 @@ class Handler(Generic[S, A], ABC):
 	def _init_internal_state(self) -> S:
 		pass
 
+	@property
+	def internal_state(self) -> S:
+		return self.get_internal_state()
+
 	def get_internal_state(self) -> S:
 		return self.__internal_state
 
@@ -51,6 +55,9 @@ class Handler(Generic[S, A], ABC):
 		with open(path, "w") as file:
 			json.dump(config, file)
 
+	def reset(self):
+		self.__internal_state = self._init_internal_state()
+
 	@classmethod
 	def load_config(cls, config: typing.Dict[str, typing.Any], *args, **kwargs) -> 'Handler':
 		handler = cls(*args, **kwargs)
@@ -74,7 +81,7 @@ class MapHandler(Handler[MS, A], ABC):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.__handlers_map = None
+		self.__handlers_map: typing.Optional[typing.Dict[Stage, Handler]] = None
 
 	@abstractmethod
 	def _map_handlers(self) -> typing.Dict[Stage, Handler]:
@@ -95,6 +102,9 @@ class MapHandler(Handler[MS, A], ABC):
 		if self.__handlers_map is None:
 			self.__handlers_map = self._map_handlers()
 		return self.__handlers_map.get(internal_state.stage)
+
+	def _get_all_handlers(self) -> typing.List[Handler]:
+		return list(self.__handlers_map.values())
 
 	def _post_handle(self, state: LLMUIState, args: A):
 		pass

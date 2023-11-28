@@ -12,6 +12,10 @@ class ActionExecutor(ABC):
 			cwd = os.path.abspath(".")
 		self.__cwd = cwd
 
+	@property
+	def _cwd(self):
+		return self._get_cwd()
+
 	def _get_cwd(self) -> str:
 		return self.__cwd
 

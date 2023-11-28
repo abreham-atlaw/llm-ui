@@ -2,7 +2,8 @@ import unittest
 import os
 
 from lib.runtime.runners.docker_runner import DockerRunner
-from llmui.core.agent.directed.sections.debug.handlers.debug_handler import DebugHandler
+from llmui.core.agent.directed.sections.common.models import ProjectInfo
+from llmui.core.agent.directed.sections.debug.handlers.debug_handler import DebugHandler, DebugHandlerArgs
 from llmui.core.agent.directed.sections.debug.handlers.modify_handler import ModifyHandlerArgs
 from llmui.core.agent.directed.sections.debug.states.debug_state import DebugStage
 from llmui.core.environment import LLMUIState
@@ -39,11 +40,11 @@ class DebugHandlerTest(unittest.TestCase):
 	def test_functionality(self):
 		state = LLMUIState(
 			action_stack=[],
-			output="",
+			outputs=[],
 			read_content=self.read_content,
 			root_path=self.ROOT_PATH,
 			project_description="""
-The app is a flask rest-api backend for a simple todo list.
+The app is a flask rest-api backend for a simple todo list. The unittest is done using pytest
 The app will have the following features:
 
 	Users can add new todo items.
@@ -67,12 +68,17 @@ The following are the required endpoints for the app:
 		while handler.get_internal_state().stage != DebugStage.done:
 			action = handler.handle(
 				state,
-				None
+				DebugHandlerArgs(
+					project_info=ProjectInfo(
+						description=state.project_description,
+						tech_stack=["python", "flask", "unittest"]
+					)
+				)
 			)
 			if action is not None:
 				if action.command == "write":
 					self.__write(os.path.join(self.ROOT_PATH, action.args[0]), action.args[1])
 				elif action.command == "run":
-					state.output = self.__run(state.root_path)
+					state.outputs.append(self.__run(state.root_path))
 
 		self.assertTrue(handler.get_internal_state().stage == DebugStage.done)

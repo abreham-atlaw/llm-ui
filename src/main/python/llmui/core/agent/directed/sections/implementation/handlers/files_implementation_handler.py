@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from llmui.core.agent.directed.lib.handler import Handler, A, S
+from llmui.core.agent.directed.sections.common.models import ProjectInfo
 from llmui.core.agent.directed.sections.implementation.executors.file_implementation_executor import \
 	FileImplementationExecutor
 from llmui.core.agent.directed.sections.implementation.states.files_implementation_state import FilesImplementationState
@@ -15,6 +16,7 @@ class FilesImplementationArgs:
 	files: typing.List[str]
 	dependencies: typing.Dict[str, typing.List[str]]
 	descriptions: typing.Dict[str, str]
+	project_info: ProjectInfo
 
 
 class FilesImplementationHandler(Handler[FilesImplementationState, FilesImplementationArgs]):
@@ -35,9 +37,10 @@ class FilesImplementationHandler(Handler[FilesImplementationState, FilesImplemen
 			key=lambda file: len(dependencies[file])
 		)
 
-	def __implement_file(self, file: str, file_description: str, dependencies: typing.List[str], project_description: str, reader: typing.Callable) -> str:
+	def __implement_file(self, file: str, file_description: str, dependencies: typing.List[str], project_description: str, tech_stack: typing.List[str], reader: typing.Callable) -> str:
 		return self.__executor((
 			project_description,
+			tech_stack,
 			file,
 			file_description,
 			{
@@ -62,6 +65,7 @@ class FilesImplementationHandler(Handler[FilesImplementationState, FilesImplemen
 				args.descriptions[file],
 				args.dependencies[file],
 				state.project_description,
+				args.project_info.tech_stack,
 				state.read_content
 			)
 			self.get_internal_state().implemented_files.append(file)
