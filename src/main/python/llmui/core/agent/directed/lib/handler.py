@@ -18,9 +18,10 @@ class Handler(Generic[S, A], ABC):
 
 	INTERNAL_STATE_CLS = InternalState
 
-	def __init__(self, llm: LLM):
+	def __init__(self, llm: LLM, auto_save_path: typing.Optional[str] = None):
 		self._llm = llm
 		self.__internal_state = self._init_internal_state()
+		self.__auto_save_path = auto_save_path
 
 	@abstractmethod
 	def _init_internal_state(self) -> S:
@@ -37,8 +38,14 @@ class Handler(Generic[S, A], ABC):
 		self.__internal_state = internal_state
 
 	@abstractmethod
-	def handle(self, state: LLMUIState, args: A) -> Optional[LLMUIAction]:
+	def _handle(self, state: LLMUIState, args: A) -> Optional[LLMUIAction]:
 		pass
+
+	def handle(self, state: LLMUIState, args: A) -> Optional[LLMUIAction]:
+		action = self._handle(state, args)
+		if self.__auto_save_path is not None:
+			self._auto_save()
+		return action
 
 	@classmethod
 	def _get_serializer(cls) -> InternalStateSerializer:
@@ -47,8 +54,11 @@ class Handler(Generic[S, A], ABC):
 	def export_config(self) -> typing.Dict[str, typing.Any]:
 		serializer = self._get_serializer()
 		return serializer.serialize(
-			self.get_internal_state()
+			self.internal_state
 		)
+
+	def _auto_save(self):
+		self.save(self.__auto_save_path)
 
 	def save(self, path: str):
 		config = self.export_config()
@@ -56,6 +66,7 @@ class Handler(Generic[S, A], ABC):
 			json.dump(config, file)
 
 	def reset(self):
+		print(f"[+]Resetting {self.__class__}...")
 		self.__internal_state = self._init_internal_state()
 
 	@classmethod
@@ -83,6 +94,14 @@ class MapHandler(Handler[MS, A], ABC):
 		super().__init__(*args, **kwargs)
 		self.__handlers_map: typing.Optional[typing.Dict[Stage, Handler]] = None
 
+	@property
+	def stage(self) -> Stage:
+		return self.internal_state.stage
+
+	@stage.setter
+	def stage(self, value: Stage):
+		self.internal_state.stage = value
+
 	@abstractmethod
 	def _map_handlers(self) -> typing.Dict[Stage, Handler]:
 		pass
@@ -109,9 +128,71 @@ class MapHandler(Handler[MS, A], ABC):
 	def _post_handle(self, state: LLMUIState, args: A):
 		pass
 
-	def handle(self, state: LLMUIState, args: A) -> typing.Optional[LLMUIAction]:
-		handler, child_args = self._get_handler_args(self.get_internal_state(), state, args)
+	def _handle(self, state: LLMUIState, args: A) -> typing.Optional[LLMUIAction]:
+		handler, child_args = self._get_handler_args(self.internal_state, state, args)
 		action = handler.handle(state, child_args)
-		self.get_internal_state().stage = self._next_stage(state, args)
 		self._post_handle(state, args)
+		self.stage = self._next_stage(state, args)
 		return action
+
+	def reset(self):
+		super().reset()
+		for handler in self._get_child_handlers():
+			handler.reset()
+
+	def _get_child_handlers(self):
+		return list(self._map_handlers().values())
+
+	def export_config(self) -> typing.Dict[str, typing.Any]:
+		config = {
+			"self": super().export_config(),
+		}
+		config.update({
+			self.get_handler_name(handler): handler.export_config()
+			for handler in self._get_child_handlers()
+		})
+		return config
+
+	def __get_variable_name(self, value):
+		for name, attribute in self.__dict__.items():
+			if value is attribute:
+				return name
+		raise ValueError(f"Couldn't find name for value={value}")
+
+	def set_handlers(self, **kwargs):
+
+		for name, handler in kwargs.items():
+			for current_handler in self._get_child_handlers():
+				handler_name = self.get_handler_name(current_handler)
+				variable_name = self.__get_variable_name(current_handler)
+				if handler_name == name:
+					self.__dict__[variable_name] = handler
+
+	@classmethod
+	def get_handler_name(cls, handler):
+		return handler.__class__.__name__
+
+	@classmethod
+	def load_config(cls, config: typing.Dict[str, typing.Any], *args, **kwargs) -> 'Handler':
+
+		def get_class(handler, class_name):
+			for name, value in handler.__dict__.items():
+				if cls.get_handler_name(value) == class_name:
+					return value.__class__
+			raise Exception(f"Class not found: {class_name}")
+
+		handler: MapHandler = super(MapHandler, cls).load_config(
+			config.pop("self"),
+			*args,
+			**kwargs
+		)
+
+		child_handlers = {
+			name: get_class(handler, name).load_config(handler_config, *args, **kwargs)
+			for name, handler_config in config.items()
+		}
+
+		handler.set_handlers(
+			**child_handlers
+		)
+		return handler

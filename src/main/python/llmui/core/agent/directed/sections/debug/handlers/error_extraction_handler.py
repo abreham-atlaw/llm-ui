@@ -15,6 +15,7 @@ class ErrorExtractionHandler(Handler[ErrorExtractionState, None]):
 	def _init_internal_state(self) -> ErrorExtractionState:
 		return ErrorExtractionState()
 
-	def handle(self, state: LLMUIState, args: None) -> Optional[LLMUIAction]:
-		self.get_internal_state().extracted_message = self.__executor(state.output)
+	def _handle(self, state: LLMUIState, args: None) -> Optional[LLMUIAction]:
+		print("[+]Extracting Error")
+		self.internal_state.extracted_message = self.__executor(state.output)
 		return None

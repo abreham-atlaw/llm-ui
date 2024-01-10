@@ -12,7 +12,7 @@ class SetupHandlerTest(unittest.TestCase):
 	def test_functionality(self):
 		environment = LLMUIEnvironment(
 			cwd="/home/abreham/Projects/TeamProjects/LLM-UI/temp/projects/orbit/web",
-			environ_file="/home/abreham/Projects/TeamProjects/LLM-UI/temp/projects/orbit/environ_state.json"
+			environ_file="/home/abreham/Projects/TeamProjects/LLM-UI/temp/projects/orbit/environ.json"
 		)
 
 		handler = SetupHandler(
@@ -20,7 +20,7 @@ class SetupHandlerTest(unittest.TestCase):
 		)
 
 		while not handler.internal_state.done:
-			action = handler.handle(environment.state, SetupHandlerArgs(ProjectInfo(
+			action = handler._handle(environment.state, SetupHandlerArgs(ProjectInfo(
 				tech_stack=["Vue3", "Typescript", "Fedora"],
 				description=environment.state.project_description
 			)))

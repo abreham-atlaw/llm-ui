@@ -16,9 +16,10 @@ class CheckStuckStatusHandler(Handler[CheckStuckStatusState, None]):
 	def _init_internal_state(self) -> CheckStuckStatusState:
 		return CheckStuckStatusState()
 
-	def handle(self, state: LLMUIState, args: None) -> Optional[LLMUIAction]:
+	def _handle(self, state: LLMUIState, args: None) -> Optional[LLMUIAction]:
 		if len(state.outputs) < self.__lookback:
-			self.get_internal_state().is_stuck = False
+			self.internal_state.is_stuck = False
 			return
-		self.get_internal_state().is_stuck = self.__executor(state.outputs[-self.__lookback:])
+		print("[+]Checking Stuck Status...")
+		self.internal_state.is_stuck = self.__executor(state.outputs[-self.__lookback:])
 		return None

@@ -53,7 +53,7 @@ The following are the required endpoints for the app:
 """
 		)
 		handler = ListFilesHandler(LLMProviders.provide_console_llm())
-		handler.handle(
+		handler._handle(
 			state,
 			None
 		)

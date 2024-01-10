@@ -12,7 +12,7 @@ class InternalStateSerializer:
 		self.__cls = cls
 
 	def serialize(self, state: InternalState) -> typing.Dict[str, typing.Any]:
-		return state.__dict__
+		return state.__dict__.copy()
 
 	def deserialize(self, data: typing.Dict[str, typing.Any]) -> InternalState:
 		try:

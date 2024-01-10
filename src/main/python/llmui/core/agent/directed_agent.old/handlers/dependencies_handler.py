@@ -23,7 +23,7 @@ class DependenciesHandler(StageHandler):
 	) -> typing.List[str]:
 		prompt = self.__prompt_formatter.format(
 			files_list=internal_state.files,
-			descriptions=internal_state.descriptions,
+			descriptions=internal_state.files_tasks,
 			file=file,
 			project_description=context.project_description
 		)

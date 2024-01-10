@@ -81,7 +81,7 @@ lib
 		)
 
 		handler = DockerPrepHandler(LLMProviders.provide_console_llm())
-		action = handler.handle(
+		action = handler._handle(
 			state,
 			None
 		)

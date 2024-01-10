@@ -21,10 +21,8 @@ I'm running the dockerfile:
 I tried running the test but it failed with the error:
 "{message}"
 
-Can you make a numbered list of files I should check to solve this issue? Use the format below:
-1. path/to/file: descriptions for change
-2. path/to/file2: descriptions for change
-
+Can you make a list of files(their paths, feel free to create new files) with what I need to do on the file to fix the issue above?
+Make it as detailed as possible(include classes, functions to be implemented).
 """
 
 	def _prepare_output(self, output: str, arg: typing.Tuple[str, str, typing.Callable]) -> typing.List[str]:

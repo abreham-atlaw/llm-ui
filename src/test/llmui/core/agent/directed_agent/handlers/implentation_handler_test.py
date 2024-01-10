@@ -62,4 +62,4 @@ This can be done using Django's built-in authentication system.
 
 		)
 
-		handler.handle(Stage.DEPENDENCY_LISTED, )
+		handler._handle(Stage.DEPENDENCY_LISTED, )

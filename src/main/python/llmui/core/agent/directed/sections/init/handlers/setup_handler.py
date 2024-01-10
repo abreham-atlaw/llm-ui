@@ -25,10 +25,11 @@ class SetupHandler(Handler[SetupState, SetupHandlerArgs]):
 	def _init_internal_state(self) -> SetupState:
 		return SetupState()
 
-	def handle(self, state: LLMUIState, args: SetupHandlerArgs) -> Optional[LLMUIAction]:
+	def _handle(self, state: LLMUIState, args: SetupHandlerArgs) -> Optional[LLMUIAction]:
+		print("[+]Setting up project...")
 		if self.internal_state.commands is None:
 			self.internal_state.commands = self.__list_command_executor((
-				args.project_info.description,
+				args.project_info.task,
 				args.project_info.tech_stack)
 			)
 			return None

@@ -25,7 +25,7 @@ class ImplementationHandler(StageHandler):
 	def __implement_file(self, file: str, internal_state: InternalState, state: LLMUIState, context: HandlerContext) -> str:
 		prompt = self.__prompt_formatter.format(
 			file=file,
-			description=internal_state.descriptions.get(file),
+			description=internal_state.files_tasks.get(file),
 			dependencies=internal_state.dependencies.get(file),
 			project_description=context.project_description,
 			reader=state.read_content

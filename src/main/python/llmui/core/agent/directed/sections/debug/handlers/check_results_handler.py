@@ -15,6 +15,7 @@ class CheckResultsHandler(Handler[CheckResultsState, None]):
 	def _init_internal_state(self) -> CheckResultsState:
 		return CheckResultsState()
 
-	def handle(self, state: LLMUIState, args: None) -> Optional[LLMUIAction]:
-		self.get_internal_state().passed = self.__executor(state.output)
+	def _handle(self, state: LLMUIState, args: None) -> Optional[LLMUIAction]:
+		print("[+]Checking Results")
+		self.internal_state.passed = self.__executor(state.output)
 		return None

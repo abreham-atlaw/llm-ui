@@ -15,6 +15,7 @@ class ListFilesHandler(Handler[ListFilesState, str]):
 	def _init_internal_state(self) -> ListFilesState:
 		return ListFilesState()
 
-	def handle(self, state: LLMUIState, args: str) -> Optional[LLMUIAction]:
-		self.get_internal_state().files = self.__executor.call((state.root_path, args, state.read_content))
+	def _handle(self, state: LLMUIState, args: str) -> Optional[LLMUIAction]:
+		print("[+]Listing Files...")
+		self.internal_state.files = self.__executor.call((state.root_path, args, state.read_content))
 		return None

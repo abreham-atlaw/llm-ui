@@ -13,16 +13,16 @@ from llmui.core.environment.state import LLMUIState
 
 class LLMUIEnvironment(Environment[LLMUIState, LLMUIAction]):
 
-	def __init__(self, cwd: str, environ_file: str, *args, **kwargs):
+	def __init__(self, environ_file: str, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.__working_dir = cwd
+		self.__state = self.__load_state(environ_file)
+		self.__working_dir = self.state.root_path
 		self.__executor = ParentActionExecutor([
 			WriteExecutor(cwd=self.__working_dir),
 			ReadExecutor(cwd=self.__working_dir),
 			RunExecutor(cwd=self.__working_dir),
 			BashExecutor(cwd=self.__working_dir)
 		], cwd=self.__working_dir)
-		self.__state = self.__load_state(environ_file)
 
 	def __load_state(self, path: str) -> LLMUIState:
 		with open(path, 'r') as file:
@@ -33,6 +33,7 @@ class LLMUIEnvironment(Environment[LLMUIState, LLMUIAction]):
 			outputs=[],
 			read_content=self.__read_file,
 			root_path=data.get('cwd', ''),
+			task=data.get("task", "")
 		)
 
 	def __read_file(self, path) -> str:

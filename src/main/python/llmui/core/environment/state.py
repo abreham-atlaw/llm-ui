@@ -35,6 +35,9 @@ class LLMUIState:
             return ""
         return self.outputs[-1]
 
+    def listdir(self, path: str) -> typing.List[str]:
+        return os.listdir(os.path.join(self.root_path, path))
+
     def __deepcopy__(self, memodict={}):
         return LLMUIState(
             project_description=self.project_description,

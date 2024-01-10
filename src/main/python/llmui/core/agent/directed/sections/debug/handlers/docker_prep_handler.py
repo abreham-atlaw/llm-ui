@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from llmui.core.agent.directed.lib.handler import Handler
+from llmui.core.agent.directed.sections.common.models import ProjectInfo
 from llmui.core.agent.directed.sections.debug.executors.docker_prep_executor import DockerPrepExecutor
 from llmui.core.agent.directed.sections.debug.states.docker_prep_state import DockerPrepState
 from llmui.core.environment import LLMUIState, LLMUIAction
@@ -10,7 +11,7 @@ from llmui.core.environment import LLMUIState, LLMUIAction
 
 @dataclass
 class DockerPrepHandlerArgs:
-	tech_stack: typing.List[str]
+	project_info: ProjectInfo
 
 
 class DockerPrepHandler(Handler[DockerPrepState, DockerPrepHandlerArgs]):
@@ -24,12 +25,13 @@ class DockerPrepHandler(Handler[DockerPrepState, DockerPrepHandlerArgs]):
 	def _init_internal_state(self) -> DockerPrepState:
 		return DockerPrepState()
 
-	def handle(self, state: LLMUIState, args: DockerPrepHandlerArgs) -> Optional[LLMUIAction]:
+	def _handle(self, state: LLMUIState, args: DockerPrepHandlerArgs) -> Optional[LLMUIAction]:
 		if "Dockerfile" in state.files:
-			self.get_internal_state().complete = True
+			self.internal_state.complete = True
 			return None
-		response = self.__executor((state.root_path, args.tech_stack))
-		self.get_internal_state().complete = True
+		print("[+]Preparing Debug...")
+		response = self.__executor((state.files, args.project_info.tech_stack, args.project_info.ignored_files))
+		self.internal_state.complete = True
 		return LLMUIAction(
 			"write",
 			[

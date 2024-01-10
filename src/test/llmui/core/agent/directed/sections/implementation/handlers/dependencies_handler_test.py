@@ -2,7 +2,7 @@ import unittest
 
 from llmui.core.agent.directed.sections.implementation.handlers.dependencies_handler import DependenciesHandler, \
 	DependenciesArgs
-from llmui.core.environment import LLMUIState
+from llmui.core.environment import LLMUIState, LLMUIEnvironment
 from llmui.di import LLMProviders
 
 
@@ -10,91 +10,47 @@ class DependenciesHandlerTest(unittest.TestCase):
 
 
 	def test_functionality(self):
-		state = LLMUIState(
-			action_stack=[],
-			output="",
-			read_content=None,
-			root_path=".",
-			project_description="""
-App Name: Foodie Friends
-
-Description: Foodie Friends is a social food delivery app that connects users with local restaurants and food vendors. Users can browse a wide range of culinary delights, read reviews from other users, and order food for delivery or pick-up. The app also features a community forum where users can share food recommendations, ask questions, and connect with other foodies.
-
-Required Pages:
-
-	Home page: This is the main page of the app where users can browse restaurants and food vendors. The page should 
-	also display popular dishes, recent orders, and upcoming events. Restaurant page: This page provides detailed 
-	information about a specific restaurant, such as its menu, hours of operation, and contact information. Users can 
-	also read reviews from other users and place an order for delivery or pick-up. Food page: This page provides 
-	detailed information about a specific dish, such as its ingredients, nutritional information, and reviews from 
-	other users. Cart page: This page allows users to view the items they have added to their cart and checkout. 
-	Profile page: This page allows users to create a profile, edit their account settings, and view their order 
-	history. Community forum: This page allows users to connect with other foodies, share food recommendations, 
-	and ask questions.
-
-Additional Features:
-
-	The app can be integrated with a payment processing system to allow users to pay for their orders securely.
-	The app can be integrated with a geolocation service to allow users to find restaurants and food vendors near them.
-	The app can be integrated with a messaging service to allow users to communicate with restaurants and food vendors.
-	The app can be used to create and manage loyalty programs.
-
-This is just a basic idea for a social food delivery app. There are many other features that could be added to make 
-the app more comprehensive and user-friendly.
-
-It'll use the flutter with the following folder structure.
-
-lib
-├── apps
-│ ├── auth
-│ │ ├── application
-│ │ │ ├── blocs
-│ │ │ ├── events
-│ │ │ ├── forms
-│ │ │ └── states
-│ │ ├── data
-│ │ │ ├── models
-│ │ │ ├── repositories
-│ │ │ └── requests
-│ │ └── presentation
-│ │ ├── screens
-│ │ └── widgets
-│ └── core
-│ │ ├── application
-│ │ │ ├── blocs
-│ │ │ ├── events
-│ │ │ ├── forms
-│ │ │ └── states
-│ │ ├── data
-│ │ │ ├── models
-│ │ │ ├── repositories
-│ │ │ └── requests
-│ │ └── presentation
-│ │ │ ├── screens
-│ │ │ └── widgets
-├── configs
-│ ├── content_configs.dart
-│ ├── data_configs.dart
-│ └── ui_configs.dart
-├── main.dart
-└── router.dart
-
-"""
+		environment = LLMUIEnvironment(
+			environ_file="/home/abreham/Projects/TeamProjects/LLM-UI/temp/projects/orbit/environ.json"
 		)
-
-		handler = DependenciesHandler(LLMProviders.provide_default_llm())
-		handler.handle(
-			state,
+		handler = DependenciesHandler(LLMProviders.provide_console_llm())
+		handler._handle(
+			environment.state,
 			DependenciesArgs(
-				files=[
-					"lib/apps/auth/application/blocs/AuthBloc.dart",
-					"lib/apps/auth/application/events/AuthEvent.dart",
-					"lib/apps/auth/application/forms/AuthForms.dart",
-					"lib/apps/auth/application/states/AuthState.dart",
-					"lib/apps/auth/data/models/AuthModels.dart",
-					"lib/apps/auth/data/repositories/AuthRepository.dart"
+				descriptions={
+					"orbit-website/index.html": "The index.html file is a basic HTML file that serves as the entry point for a web application. It sets the document type, specifies the language, includes the necessary meta tags for character encoding and viewport settings, sets the favicon, and defines the title of the web page. The main content of the file includes a div element with the id \"app\" and a script tag that loads a TypeScript file named \"main.ts\" as a module.",
+					"orbit-website/src/App.vue": "The given file, `App.vue`, is a Vue.js component file written in TypeScript. It imports the `RouterView` component from the `vue-router` package and uses it within the template section. This component is responsible for rendering the views based on the current route. The file also includes a scoped style tag for component-specific styling. The purpose of this file is to serve as the main entry point for the application and to provide the routing configuration for rendering different views.",
+					"orbit-website/src/components/Home.vue": "The Home.vue file is a Vue3 single-file component that represents the home page of a website. It includes HTML template markup with headings, paragraphs, a list, and buttons. It uses TypeScript and the vue-router library for routing functionality. The main purpose of this file is to display information about the company \"Orbit\" and its services, provide a button to contact them, and a link to navigate to the \"About\" page.",
+					"orbit-website/src/components/About.vue": "The file \"About.vue\" is a Vue.js single-file component that represents the About page of a website or application. It contains a template with headings, paragraphs, and lists to display information about the mission, vision, values, history, and team members of a company or organization. The script setup section defines variables for storing data related to the organization's mission, vision, values, history, and team members. The styling section contains scoped CSS rules for customizing the appearance of the component.",
+					"orbit-website/src/components": "The \"orbit-website/src/components\" folder contains Vue.js single-file components that are used in the Orbit website project. These components serve as building blocks for different sections and pages of the website. The folder aids in organizing and managing the components of the website, enabling efficient development and maintenance of the UI elements and functionality.",
+					"orbit-website/src/router/index.ts": "The file `index.ts` is a TypeScript module that imports dependencies from `vue-router` library and defines routes for a Vue.js application. It creates a router instance using the `createRouter` function and sets up two routes: one for the home page and one for the about page. The router is then exported as the default export from the module. The purpose of this file is to configure the routes for the application's navigation.",
+					"orbit-website/src/router": "The `orbit-website/src/router` is a directory that contains the files responsible for managing the routing functionality of the Orbit website. It is responsible for defining and configuring the routes that the website's pages will use for navigation.",
+					"orbit-website/src/views": "The \"orbit-website/src/views\" directory is likely a part of a web development project. It is responsible for storing the views of the website, which are templates or pages that are rendered and displayed to the users. The views directory is generally where the front-end components, such as HTML, CSS, and JavaScript files, are organized and stored for different pages or sections of the website.",
+					"orbit-website/src/main.ts": "The main.ts file imports the main.css file, the createApp function from the Vue library, and the App.vue component. It also imports and uses a router. The purpose of this file is to create and mount a Vue app to the '#app' element in the HTML document.",
+					"orbit-website/src": "The \"orbit-website/src\" directory serves as the source code directory for the Orbit website project. It contains various folders and files that are essential for building and running the website. This directory serves as the central location for organizing and managing the project's source code, including Vue.js components, routing configuration, views, and other related files. It plays a crucial role in facilitating efficient development, maintenance, and deployment of the Orbit website.",
+					"orbit-website": "The \"orbit-website\" folder serves as the root directory for the Orbit website project. It contains various files and subdirectories that are essential for developing and deploying the website. This folder acts as the central hub for organizing and managing the project's source code, configuration files, dependencies (stored in the \"node_modules\" directory), and other related assets. It provides a structured environment for building and running the website, enabling efficient development and deployment processes."
+				},
+				ignored_files=[
+					"orbit-website/.vscode",
+					"orbit-website/node_modules",
+					"orbit-website/public",
+					"orbit-website/src/assets",
+					"orbit-website/package-lock.json",
+					"orbit-website/package.json",
+					"orbit-website/README.md",
+					"orbit-website/.gitignore",
+					"orbit-website/env.d.ts",
+					"orbit-website/.eslintrc.cjs",
+					"orbit-website/vite.config.ts",
+					"orbit-website/tsconfig.node.json",
+					"orbit-website/tsconfig.app.json",
+					"orbit-website/tsconfig.json"
 				],
-				descriptions={'lib/apps/auth/application/blocs/AuthBloc.dart': 'This file defines the AuthBloc class, which manages the authentication state of the app.', 'lib/apps/auth/application/events/AuthEvent.dart': 'This file defines the AuthEvent class, which represents the events that can be emitted by the AuthBloc.', 'lib/apps/auth/application/forms/AuthForms.dart': 'This file contains form classes related to authentication, such as login and registration forms.', 'lib/apps/auth/application/states/AuthState.dart': 'This file defines the AuthState class, which represents the different authentication states of the app.', 'lib/apps/auth/data/models/AuthModels.dart': 'This file contains data models related to authentication, such as user models.', 'lib/apps/auth/data/repositories/AuthRepository.dart': 'This file defines the AuthRepository class, which handles data operations related to authentication, such as login and registration.', 'lib/apps/auth/data/requests/AuthRequests.dart': 'This file contains request classes related to authentication, such as login and registration requests.', 'lib/apps/auth/presentation/screens/AuthScreens.dart': 'This file contains the authentication screens, such as the login and registration screens.', 'lib/apps/auth/presentation/widgets/AuthWidgets.dart': 'This file contains widgets related to authentication, such as login and registration form widgets.', 'lib/apps/core/application/blocs/CoreBloc.dart': 'This file defines the CoreBloc class, which manages the core state of the app, including navigation and global app state.', 'lib/apps/core/application/events/CoreEvent.dart': 'This file defines the CoreEvent class, which represents the events that can be emitted by the CoreBloc.', 'lib/apps/core/application/forms/CoreForms.dart': 'This file contains form classes related to core functionality, such as search forms.', 'lib/apps/core/application/states/CoreState.dart': 'This file defines the CoreState class, which represents the different core states of the app.', 'lib/apps/core/data/models/CoreModels.dart': 'This file contains data models related to core functionality, such as location models.', 'lib/apps/core/data/repositories/CoreRepository.dart': 'This file defines the CoreRepository class, which handles data operations related to core functionality, such as fetching nearby restaurants.', 'lib/apps/core/data/requests/CoreRequests.dart': 'This file contains request classes related to core functionality, such as location search requests.', 'lib/apps/core/presentation/screens/CoreScreens.dart': 'This file contains the core screens, such as the home screen and restaurant screen.', 'lib/apps/core/presentation/widgets/CoreWidgets.dart': 'This file contains widgets related to core functionality, such as restaurant list and menu widgets.', 'lib/configs/content_configs.dart': 'This file contains content configurations for the app, such as text styles and localization settings.', 'lib/configs/data_configs.dart': 'This file contains data configurations for the app, such as API endpoints and database settings.', 'lib/configs/ui_configs.dart': 'This file contains UI configurations for the app, such as theme settings and color schemes.', 'lib/main.dart': 'This is the entry point of the app and contains the main function.', 'lib/router.dart': "This file defines the app's routing configuration, including the mapping of routes to screens."}
+				files_tasks={
+					"orbit-website/src/App.vue": "Modify the template in the 'App.vue' file to include a <router-view> element for rendering the Services Page.",
+					# "orbit-website/src/components/Services.vue": "Create a new file named 'Services.vue' in the 'components' folder. Implement the HTML structure for the Services Page in the template section of the component file. Apply styling to the services cards, giving them a pill-like shape with high border radius in the style section. Implement the carousel for case studies with curved edges in the template section.",
+					# "orbit-website/src/router/index.ts": "Update the router configuration in the 'index.ts' file to include a new route for the Services Page. Define a route path (e.g., '/services') and map it to the 'Services' component created in step 1."
+				}
 			)
 		)
 

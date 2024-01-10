@@ -85,7 +85,7 @@ Pages Required:
 		)
 		# handlers = ImplementationHandler(LLMProviders.provide_default_llm())
 		while not handler.get_internal_state().stage == ImplementationStage.done:
-			action = handler.handle(
+			action = handler._handle(
 				state,
 				ImplementationHandlerArgs(
 					ListFilesExecutor.Mode.implement,
@@ -130,7 +130,7 @@ The following are the required endpoints for the app:
 		# handlers = ImplementationHandler.load_handler("/home/abreham/Projects/TeamProjects/LLM-UI/temp/config.json", LLMProviders.provide_default_llm())
 		while not handler.get_internal_state().stage == ImplementationStage.done:
 
-			action = handler.handle(
+			action = handler._handle(
 				state,
 				ImplementationHandlerArgs(
 					ListFilesExecutor.Mode.test,

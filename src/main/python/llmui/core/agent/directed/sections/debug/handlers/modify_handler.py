@@ -24,20 +24,22 @@ class ModifyHandler(Handler[ModifyState, ModifyHandlerArgs]):
 		return ModifyState()
 
 	def __is_done(self) -> bool:
-		return set(self.get_internal_state().contents.keys()) == set(self.get_internal_state().implemented_files)
+		return set(self.internal_state.contents.keys()) == set(self.internal_state.implemented_files)
 
 	def __is_prepared(self) -> bool:
-		return self.get_internal_state().contents is not None
+		return self.internal_state.contents is not None
 
-	def handle(self, state: LLMUIState, args: ModifyHandlerArgs) -> Optional[LLMUIAction]:
+	def _handle(self, state: LLMUIState, args: ModifyHandlerArgs) -> Optional[LLMUIAction]:
 
+		print("[+]Modifying Files...")
 		if not self.__is_prepared():
-			self.get_internal_state().contents = self.__executor.call((state.root_path, args.error_message, args.relevant_files, state.read_content))
+			self.internal_state.contents = self.__executor.call((state.root_path, args.error_message, args.relevant_files, state.read_content))
 
-		for file, content in self.get_internal_state().contents.items():
-			if file in self.get_internal_state().implemented_files:
+		for file, content in self.internal_state.contents.items():
+			if file in self.internal_state.implemented_files:
 				continue
-			self.get_internal_state().implemented_files.append(file)
+			print(f"[+]Modifying {file}")
+			self.internal_state.implemented_files.append(file)
 			return LLMUIAction(
 				"write",
 				[
@@ -45,5 +47,5 @@ class ModifyHandler(Handler[ModifyState, ModifyHandlerArgs]):
 					content
 				]
 			)
-		self.get_internal_state().done = True
+		self.internal_state.done = True
 		return None

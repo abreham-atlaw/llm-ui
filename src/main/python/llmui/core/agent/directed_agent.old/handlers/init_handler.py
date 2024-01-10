@@ -27,7 +27,7 @@ class InitHandler(StageHandler):
 		response = self._get_llm().chat(prompt)
 		files = self.__parser.parse(response)
 		internal_state.files = list(files.keys())
-		internal_state.descriptions = files
+		internal_state.files_tasks = files
 		return None
 
 

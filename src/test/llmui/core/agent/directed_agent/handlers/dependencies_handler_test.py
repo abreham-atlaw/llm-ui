@@ -61,7 +61,7 @@ todo_app/
 		context = HandlerContext(
 			project_description=self.APP_DESCRIPTION
 		)
-		handler.handle(
+		handler._handle(
 			Stage.LISTED,
 			parent_state=internal_state,
 			state=state,

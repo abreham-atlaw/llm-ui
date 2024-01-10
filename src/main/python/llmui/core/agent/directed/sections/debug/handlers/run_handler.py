@@ -9,7 +9,8 @@ class RunHandler(Handler[InternalState, None]):
 	def _init_internal_state(self) -> InternalState:
 		return InternalState()
 
-	def handle(self, state: LLMUIState, args: A) -> Optional[LLMUIAction]:
+	def _handle(self, state: LLMUIState, args: A) -> Optional[LLMUIAction]:
+		print("[+]Running Program...")
 		return LLMUIAction(
 			"run",
 			[state.root_path]

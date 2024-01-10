@@ -56,7 +56,7 @@ The following are the required endpoints for the app:
 		handler = ModifyHandler(LLMProviders.provide_console_llm())
 
 		while not handler.get_internal_state().done:
-			action = handler.handle(
+			action = handler._handle(
 				state,
 				ModifyHandlerArgs(
 					relevant_files=[

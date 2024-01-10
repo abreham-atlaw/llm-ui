@@ -1,4 +1,5 @@
 from llmui import config
+from llmui.config import LLM_TEMPERATURE
 from llmui.llm import LLM, Bard, ConsoleLLM
 from llmui.llm.chatgpt import ChatGPT
 from llmui.llm.llama2gai import GAILlama2
@@ -19,5 +20,6 @@ class LLMProviders:
 	def provide_chatgpt() -> ChatGPT:
 		return ChatGPT(
 			config.OPENAI_KEY,
-			"You are a programmer with accurate responses"
+			"You are a programmer with accurate responses",
+			temperature=LLM_TEMPERATURE
 		)

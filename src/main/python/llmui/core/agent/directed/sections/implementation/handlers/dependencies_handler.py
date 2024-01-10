@@ -6,13 +6,15 @@ from llmui.core.agent.directed.lib.handler import Handler
 from llmui.core.agent.directed.sections.implementation.executors.dependencies_executor import DependenciesExecutor
 from llmui.core.agent.directed.sections.implementation.states.dependencies_state import DependenciesState
 from llmui.core.environment import LLMUIState, LLMUIAction
+from llmui.utils.format_utils import FormatUtils
 
 
 @dataclass
 class DependenciesArgs:
 	
-	files: typing.List[str]
+	files_tasks: typing.Dict[str, str]
 	descriptions: typing.Dict[str, str]
+	ignored_files: typing.List[str]
 
 
 class DependenciesHandler(Handler[DependenciesState, DependenciesArgs]):
@@ -31,19 +33,28 @@ class DependenciesHandler(Handler[DependenciesState, DependenciesArgs]):
 			file: str,
 			files: typing.List[str],
 			descriptions: typing.Dict[str, str],
-			project_description: str
+			files_tasks: typing.Dict[str, str],
+			project_description: str,
+			task: str
 	) -> typing.List[str]:
-		return self.__executor.call((files, descriptions, file, project_description))
+		dependencies = self.__executor.call((files, descriptions, files_tasks, file, project_description, task))
+		if file in dependencies:
+			dependencies.remove(file)
+		return dependencies
 
-	def handle(self, state: LLMUIState, args: DependenciesArgs) -> Optional[LLMUIAction]:
+	def _handle(self, state: LLMUIState, args: DependenciesArgs) -> Optional[LLMUIAction]:
 		print("[+]Resolving Dependencies...")
-		self.get_internal_state().dependencies = {}
-		for i, file in enumerate(args.files):
-			self.get_internal_state().dependencies[file] = self.__handle_dependency(
+		self.internal_state.dependencies = {}
+		files = list(args.files_tasks.keys())
+		for i, file in enumerate(files):
+			print(f"[+]Processing file {file}...")
+			self.internal_state.dependencies[file] = self.__handle_dependency(
 				file,
-				list(set(args.files + state.files)),
+				FormatUtils.filter_files(list(set(files + state.files)), args.ignored_files),
 				args.descriptions,
-				state.project_description
+				args.files_tasks,
+				state.project_description,
+				state.task
 			)
-			print(f"[+]Complete: {(i+1)*100/len(args.files) :.2f}%... Resolved {file}", end="\r")
+			print(f"[+]Complete: {(i+1)*100/len(files) :.2f}%...", end="\r")
 		return None

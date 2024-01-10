@@ -18,7 +18,7 @@ class CommandsHandler(Handler[CommandsState, CommandsHandlerArgs]):
 	def _init_internal_state(self) -> CommandsState:
 		return CommandsState()
 
-	def handle(self, state: LLMUIState, args: CommandsHandlerArgs) -> Optional[LLMUIAction]:
+	def _handle(self, state: LLMUIState, args: CommandsHandlerArgs) -> Optional[LLMUIAction]:
 		for command in args.commands:
 			if command not in self.internal_state.executed_commands:
 				action = LLMUIAction(

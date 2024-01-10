@@ -14,7 +14,11 @@ class WriteExecutor(ActionExecutor):
 		os.makedirs(path, exist_ok=True)
 
 	def __write(self, file_path: str, content: str):
-		self.__create_dir(file_path)
+		parent = os.path.dirname(file_path)
+		if parent == "":
+			parent = "./"
+		if not os.path.exists(parent):
+			self.__create_dir(parent)
 		with open(file_path, "w") as file:
 			print(content, file=file)
 

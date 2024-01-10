@@ -59,3 +59,26 @@ class FormatUtils:
 				pass
 
 		raise Exception(f"Json Parse Error: {text}")
+
+	@staticmethod
+	def filter_files(files, ignored_files):
+		filtered_files = []
+		for file in files:
+			if not any(file.startswith(ignored_file) for ignored_file in ignored_files):
+				filtered_files.append(file)
+		return filtered_files
+
+	@staticmethod
+	def generate_files_list(files_list: typing.List[str], ignored_files: typing.List[str] = None) -> str:
+		if ignored_files is not None:
+			files_list = FormatUtils.filter_files(files_list, ignored_files=ignored_files)
+		return "\n".join([
+			f"{i+1}. {file}"
+			for i, file in enumerate(files_list)
+		])
+
+	@staticmethod
+	def extract_list_from_json_string(text) -> typing.List[str]:
+		output = FormatUtils.extract_json_from_string(text)
+		tasks = [output[key] for key in sorted(output)]
+		return tasks

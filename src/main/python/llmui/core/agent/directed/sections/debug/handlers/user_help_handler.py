@@ -13,8 +13,9 @@ class UserHelpHandler(Handler[UserHelpState, None]):
 	def __get_user_input(self, message: str) -> str:
 		return input(message)
 
-	def handle(self, state: LLMUIState, args: None) -> Optional[LLMUIAction]:
-		self.get_internal_state().user_input = self.__get_user_input(f"""
+	def _handle(self, state: LLMUIState, args: None) -> Optional[LLMUIAction]:
+		print("[+]Requesting User Help...")
+		self.internal_state.user_input = self.__get_user_input(f"""
 I seem to be stuck on this error:		
 {state.output}
 
