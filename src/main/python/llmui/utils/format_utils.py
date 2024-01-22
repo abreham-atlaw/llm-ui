@@ -69,16 +69,21 @@ class FormatUtils:
 		return filtered_files
 
 	@staticmethod
-	def generate_files_list(files_list: typing.List[str], ignored_files: typing.List[str] = None) -> str:
+	def generate_files_list(files_list: typing.List[str], ignored_files: typing.List[str] = None, description: typing.Dict[str, str] = None) -> str:
+
 		if ignored_files is not None:
 			files_list = FormatUtils.filter_files(files_list, ignored_files=ignored_files)
 		return "\n".join([
-			f"{i+1}. {file}"
+			f"{i+1}. {file}{f':{description.get(file)}' if description.get(file) is not None else ''}"
 			for i, file in enumerate(files_list)
 		])
 
 	@staticmethod
 	def extract_list_from_json_string(text) -> typing.List[str]:
 		output = FormatUtils.extract_json_from_string(text)
-		tasks = [output[key] for key in sorted(output)]
+		tasks = [output[key] for key in sorted(output, key=lambda k: int(k))]
 		return tasks
+
+	@staticmethod
+	def format_docs(docs: typing.List[str]) -> str:
+		return "<<DOCUMENTATION>>\n\n\n"+"\n\n".join(docs)+"\n\n\n<</DOCUMENTATION>>"

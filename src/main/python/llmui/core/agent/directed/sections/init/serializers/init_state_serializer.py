@@ -13,7 +13,7 @@ class InitStateSerializer(InternalStateSerializer):
 	def serialize(self, state: InitState) -> typing.Dict[str, typing.Any]:
 		data = super().serialize(state)
 		if state.project_info is not None:
-			data["project_info"] = state.project_info.__dict__
+			data["project_info"] = state.project_info.__dict__.copy()
 		return data
 
 	def deserialize(self, data: typing.Dict[str, typing.Any]) -> InitState:

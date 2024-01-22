@@ -50,7 +50,7 @@ FINAL OUTPUT:
 		llm_output = self._llm.chat(prompt)
 		final_output = self._prepare_output(llm_output, arg)
 		if self.__logging:
-			self.__log(prompt, llm_output,final_output)
+			self.__log(prompt, llm_output, final_output)
 		return final_output
 
 	def __call__(self, arg: I):

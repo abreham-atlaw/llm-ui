@@ -71,12 +71,12 @@ class DebugHandler(MapHandler[DebugState, DebugHandlerArgs]):
 		arg_function = {
 			DebugStage.prep: lambda: DockerPrepHandlerArgs(args.project_info),
 			DebugStage.list_files: lambda: ListFilesHandlerArgs(
-				mode=ListFilesExecutor.Mode.debug,
-				files_descriptions=self.__analysis_handler.internal_state.analysis,
+				mode=ListFilesHandler.Mode.debug,
 				project_info=ProjectInfo(
 					task=self.__get_error_message(),
 					tech_stack=args.project_info.tech_stack,
-					ignored_files=args.project_info.ignored_files
+					ignored_files=args.project_info.ignored_files,
+					docs=args.project_info.docs
 				)
 			),
 			# DebugStage.modify: lambda: ModifyHandlerArgs(
@@ -88,7 +88,8 @@ class DebugHandler(MapHandler[DebugState, DebugHandlerArgs]):
 				project_info=ProjectInfo(
 					task=self.__get_error_message(),
 					tech_stack=args.project_info.tech_stack,
-					ignored_files=args.project_info.ignored_files
+					ignored_files=args.project_info.ignored_files,
+					docs=args.project_info.docs
 				)
 			)
 		}.get(self.internal_state.stage)

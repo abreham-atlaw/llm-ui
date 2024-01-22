@@ -5,13 +5,10 @@ import re
 
 from llmui.core.agent.directed.lib.executor import LLMExecutor
 from llmui.core.agent.directed.sections.implementation.executors.summarize_task_executor import SummarizeTaskExecutor
+from llmui.utils.format_utils import FormatUtils
 
 
-class FileImplementationExecutor(LLMExecutor[typing.Tuple[str, typing.List[str], str, str, str, typing.List[str], typing.Callable], str]):
-
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.__summarize_executor = SummarizeTaskExecutor(self._llm)
+class FileImplementationExecutor(LLMExecutor[typing.Tuple[str, typing.List[str], str, str, str, typing.List[str], typing.Callable, typing.List[str]], str]):
 
 	@staticmethod
 	def __extract_first_code_block(text) -> str:
@@ -40,36 +37,37 @@ class FileImplementationExecutor(LLMExecutor[typing.Tuple[str, typing.List[str],
 	def __generate_file_content(root_path, file, read):
 		if os.path.exists(os.path.join(root_path, file)):
 			return f"""
-The current content of the file, {file}, is:
+Given the current content of the file:
+// {file}
 ```
 {read(file)}
 ```
 """
-		return f"""
-The file, {file}, has not been implemented yet. 
-"""
+		return ""
 
-	def _prepare_prompt(self, arg: typing.Tuple[str, typing.List[str], str, str, str, typing.List[str], typing.Callable]) -> str:
-		project_task, tech_stack, root_path, file, file_task, dependencies, read = arg
+	def _prepare_prompt(self, arg: typing.Tuple[str, typing.List[str], str, str, str, typing.List[str], typing.Callable, typing.List[str]]) -> str:
+		context, tech_stack, root_path, file, file_task, dependencies, read, docs = arg
 		prompt = f"""
-I would like it if you could help me on an app I was working on. Can you help me implement a file?
-I'm using {', '.join(tech_stack)} to build the project.
+Given the following tech stack:
+{', '.join(tech_stack)}.
 
-The task on the project is:
-{project_task}
+{'Given the following files:' if len(dependencies) > 0 else ''}
+{self.__generate_dependencies_content(dependencies, read, root_path) if len(dependencies) > 0 else ''}
 
-I have the following files:
-{self.__generate_dependencies_content(dependencies, read, root_path)}
+Given the following context:
+{context}
 
 {self.__generate_file_content(root_path, file, read)}
+
+Given the following documentation:
+{FormatUtils.format_docs(docs)}
 
 Implement or modify the file {file} with the following task:
 {file_task}
 
-Just send the complete code for the file {file}. Don't add no comments unless you necessarily have to. Feel free to send "No changes required" as a comment it the file needs no modification.
-"""
-		# prompt = self.__summarize_executor(prompt)
+Just send the complete code for the file {file}. Don't add no comments unless you necessarily have to. Feel free to send the original code back if the file needs no modification.
+""".replace("\n\n\n\n","\n")
 		return prompt
 
-	def _prepare_output(self, output: str, arg:  typing.Tuple[str, typing.List[str], str, str, str, typing.List[str], typing.Callable]) -> str:
+	def _prepare_output(self, output: str, arg:  typing.Tuple[str, typing.List[str], str, str, str, typing.List[str], typing.Callable, typing.List[str]]) -> str:
 		return self.__extract_first_code_block(output)

@@ -1,6 +1,7 @@
+import json
 import unittest
 
-from llmui.config import ENVIRON_PATH
+from llmui.config import ENVIRON_PATH, EXTRAS_SAVE_PATH
 from llmui.core.agent.directed.sections.common.models import ProjectInfo
 from llmui.core.agent.directed.sections.init.handlers.fuse_task_handler import FuseTaskHandler, FuseTaskHandlerArgs
 from llmui.core.environment import LLMUIEnvironment

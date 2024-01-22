@@ -10,6 +10,7 @@ from llmui.core.agent.directed.sections.main.handlers.task_handler import TaskHa
 from llmui.core.agent.directed.sections.main.states.phases_state import PhasesState
 from llmui.core.agent.directed.sections.main.states.task_state import TaskStage
 from llmui.core.environment import LLMUIState, LLMUIAction
+from llmui.di.utils_providers import UtilsProviders
 
 
 @dataclass
@@ -33,10 +34,14 @@ class PhasesHandler(Handler[PhasesState, PhasesHandlerArgs]):
 	def _init_internal_state(self) -> PhasesState:
 		return PhasesState()
 
+	def __get_doc(self, docs) -> str:
+		documentation = UtilsProviders.provide_documentation(docs)
+		return documentation.search("phases", num_results=1)[0]
+
 	def _handle(self, state: LLMUIState, args: PhasesHandlerArgs) -> Optional[LLMUIAction]:
 		if self.internal_state.phases is None:
 			print("[+]Breaking down phases...")
-			self.internal_state.phases = self.__phases_breakdown_executor((state.project_description, args.project_info.task))
+			self.internal_state.phases = self.__phases_breakdown_executor((state.project_description, self.__get_doc(args.project_info.docs), args.project_info.task, ))
 			return None
 		if self.__task_handler.stage == TaskStage.done:
 			if self.internal_state.phase_idx == len(self.internal_state.phases) - 1:
@@ -48,7 +53,8 @@ class PhasesHandler(Handler[PhasesState, PhasesHandlerArgs]):
 			project_info=ProjectInfo(
 				tech_stack=args.project_info.tech_stack,
 				ignored_files=args.project_info.ignored_files,
-				task=self.internal_state.current_phase
+				task=self.internal_state.current_phase,
+				docs=args.project_info.docs
 			),
 			debug=args.debug
 		))

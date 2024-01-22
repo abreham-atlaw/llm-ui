@@ -8,7 +8,7 @@ from llmui.utils.format_utils import FormatUtils
 
 
 class DependenciesExecutor(LLMExecutor[
-							typing.Tuple[typing.List[str], typing.Dict[str, str],  typing.Dict[str, str], str, str, str],
+							typing.Tuple[typing.List[str], typing.Dict[str, str],  typing.Dict[str, str], str, typing.List[str], str],
 							typing.List
 						]):
 
@@ -36,29 +36,29 @@ class DependenciesExecutor(LLMExecutor[
 	@staticmethod
 	def __generate_file_descriptions(files_list: typing.List[str], descriptions: typing.Dict[str, str]) -> str:
 		return "\n".join([
-			f"{i}. {file}: {descriptions.get(file, 'Not Implemented yet.')}"
+			f"{i+1}. {file}: {descriptions.get(file, 'Not Implemented yet.')}"
 			for i, file in enumerate(files_list)
 		])
 
-	def _prepare_prompt(self, arg: typing.Tuple[typing.List[str], typing.Dict[str, str],  typing.Dict[str, str], str, str, str]) -> str:
-		files_list, descriptions, file_tasks, file, project_description, task = arg
+	def _prepare_prompt(self, arg: typing.Tuple[typing.List[str], typing.Dict[str, str],  typing.Dict[str, str], str, typing.List[str], str]) -> str:
+		files_list, descriptions, file_tasks, file, docs, task = arg
 		return f"""
-I would like it if you could help me on an app I was working on.
+Consider the following documentation:
+{FormatUtils.format_docs(docs)}
 
-I wanted to accomplish the following tasks:
+I wanted to accomplish the following task:
 {task}
 
-Here are the list of files in the project currently:
+Given the following relevant files:
 {self.__generate_file_descriptions(files_list, descriptions)}
 
-{'And here is the task for the file I would modify:' if len(file_tasks) == 1 else 'And here are the tasks for each file I would modify:'}
+On which files does the file and task below directly depend on?
 {self.__generate_file_descriptions(list(file_tasks.keys()), file_tasks)}
 
-Which of these files does one programmer need to read before modifying the file {file} to accomplish it's task? Feel free to includes files from the tasks list. Just simply list the files pathes.
-Note: Can you limit the number of dependencies to a maximum of 5 files or less.
+Just simply list the files paths.
 """
 
-	def _prepare_output(self, output: str, arg: typing.Tuple[typing.List[str], typing.Dict[str, str],  typing.Dict[str, str], str, str, str]) -> typing.List[str]:
+	def _prepare_output(self, output: str, arg: typing.Tuple[typing.List[str], typing.Dict[str, str],  typing.Dict[str, str], str, typing.List[str], str]) -> typing.List[str]:
 		output = self.__format_executor(output)
 		files = FormatUtils.extract_list_from_json_string(output)
 		return files

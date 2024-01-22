@@ -18,7 +18,6 @@ from llmui.core.environment import LLMUIState
 
 @dataclass
 class ImplementationHandlerArgs:
-	descriptions: typing.Dict[str, str]
 	project_info: ProjectInfo
 
 
@@ -36,20 +35,9 @@ class ImplementationHandler(MapHandler[ImplementationState, ImplementationHandle
 			ImplementationStage.implement_files: self.__files_implementation_handler
 		}
 
-	# def set_handlers(
-	# 		self,
-	# 		list_files_handler=None,
-	# 		files_implementation_handler=None
-	# ):
-	# 	if list_files_handler is not None:
-	# 		self.__list_files_handler = list_files_handler
-	# 	if files_implementation_handler is not None:
-	# 		self.__files_implementation_handler = files_implementation_handler
-
 	def _get_list_files_args(self, state: LLMUIState, args: ImplementationHandlerArgs) -> ListFilesHandlerArgs:
 		return ListFilesHandlerArgs(
-			ListFilesExecutor.Mode.implement,
-			args.descriptions,
+			ListFilesHandler.Mode.implementation,
 			args.project_info
 		)
 
@@ -59,7 +47,18 @@ class ImplementationHandler(MapHandler[ImplementationState, ImplementationHandle
 			args.project_info
 		)
 
+	def _generate_project_task(self, project_info: ProjectInfo) -> str:
+		return project_info.task
+
 	def _get_args(self, state: LLMUIState, args: ImplementationHandlerArgs) -> typing.Any:
+		if self.internal_state.project_task is None:
+			self.internal_state.project_task = self._generate_project_task(args.project_info)
+		args.project_info = ProjectInfo(
+			tech_stack=args.project_info.tech_stack,
+			task=self.internal_state.project_task,
+			ignored_files=args.project_info.ignored_files,
+			docs=args.project_info.docs
+		)
 		return {
 			ImplementationStage.list_files: self._get_list_files_args,
 			ImplementationStage.implement_files: self.__get_implement_files_args
@@ -78,29 +77,3 @@ class ImplementationHandler(MapHandler[ImplementationState, ImplementationHandle
 	def _post_handle(self, state: LLMUIState, args: ImplementationHandlerArgs):
 		if self.__files_implementation_handler.internal_state.complete:
 			self.internal_state.implemented_files = self.__files_implementation_handler.internal_state.implemented_files
-
-	# def export_config(self) -> typing.Dict[str, typing.Any]:
-	# 	config = super().export_config()
-	# 	config = {
-	# 		"self": config,
-	# 		"list_files_handler": self.__list_files_handler.export_config(),
-	# 		"files_implementation_handler": self.__files_implementation_handler.export_config()
-	# 	}
-	# 	return config
-
-	# @classmethod
-	# def load_config(cls, config: typing.Dict[str, typing.Any], *args, **kwargs) -> 'Handler':
-	# 	handler: ImplementationHandler = super(ImplementationHandler, cls).load_config(
-	# 		config.get("self"),
-	# 		*args,
-	# 		**kwargs
-	# 	)
-	# 	handler.set_handlers(
-	# 		list_files_handler=ListFilesHandler.load_config(config.get("list_files_handler"), *args, **kwargs),
-	# 		files_implementation_handler=FilesImplementationHandler.load_config(
-	# 			config.get("files_implementation_handler"),
-	# 			*args,
-	# 			**kwargs
-	# 		)
-	# 	)
-	# 	return handler

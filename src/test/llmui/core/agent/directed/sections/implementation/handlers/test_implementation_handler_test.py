@@ -48,7 +48,7 @@ class TestImplementationHandlerTest(unittest.TestCase):
 						"orbit-website/src/router/index.ts",
 						"orbit-website/src/App.vue"
 					],
-					descriptions={
+					analysis={
 						"orbit-website/index.html": "The index.html file is a basic HTML file that serves as the entry point for a web application. It sets the document type, specifies the language, includes the necessary meta tags for character encoding and viewport settings, sets the favicon, and defines the title of the web page. The main content of the file includes a div element with the id \"app\" and a script tag that loads a TypeScript file named \"main.ts\" as a module.",
 						"orbit-website/src/App.vue": "The given file, `App.vue`, is a Vue.js component file written in TypeScript. It imports the `RouterView` component from the `vue-router` package and uses it within the template section. This component is responsible for rendering the views based on the current route. The file also includes a scoped style tag for component-specific styling. The purpose of this file is to serve as the main entry point for the application and to provide the routing configuration for rendering different views.",
 						"orbit-website/src/components/Home.vue": "The Home.vue file is a Vue3 single-file component that represents the home page of a website. It includes HTML template markup with headings, paragraphs, a list, and buttons. It uses TypeScript and the vue-router library for routing functionality. The main purpose of this file is to display information about the company \"Orbit\" and its services, provide a button to contact them, and a link to navigate to the \"About\" page.",

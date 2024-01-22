@@ -2,6 +2,7 @@ import json
 import unittest
 
 from llmui.config import ENVIRON_PATH, EXTRAS_SAVE_PATH, ANALYSIS_SAVE_PATH
+from llmui.core.agent.directed.sections.common.models import ProjectInfo
 from llmui.core.agent.directed.sections.init.handlers.analysis_handler import AnalysisHandler, \
 	AnalysisHandlerArgs
 from llmui.core.environment import LLMUIEnvironment
@@ -24,7 +25,12 @@ class AnalyzeProjectHandlerTest(unittest.TestCase):
 		handler.handle(
 			environment.state,
 			AnalysisHandlerArgs(
-				ignored_files=extras["ignored_files"]
+				project_info=ProjectInfo(
+					ignored_files=extras["ignored_files"],
+					tech_stack=extras["tech_stack"],
+					docs=extras["docs"],
+					task="Test task"
+				)
 			)
 		)
 

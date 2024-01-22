@@ -88,7 +88,7 @@ Pages Required:
 			action = handler._handle(
 				state,
 				ImplementationHandlerArgs(
-					ListFilesExecutor.Mode.implement,
+					ListFilesHandler.Mode.implement,
 					{},
 					project_info=ProjectInfo(
 						description=state.project_description,
@@ -133,7 +133,7 @@ The following are the required endpoints for the app:
 			action = handler._handle(
 				state,
 				ImplementationHandlerArgs(
-					ListFilesExecutor.Mode.test,
+					ListFilesHandler.Mode.test,
 					{
 						"app.py": "This file sets up the Flask application and handles the routing for the various endpoints.",
 						"models.py": "This file contains the definition of the Todo model, which represents a todo item in the database.",

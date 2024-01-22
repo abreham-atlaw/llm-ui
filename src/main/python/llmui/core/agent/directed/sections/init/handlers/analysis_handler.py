@@ -6,18 +6,24 @@ from dataclasses import dataclass
 from hashlib import md5
 
 from llmui.core.agent.directed.lib.handler import Handler
+from llmui.core.agent.directed.sections.common.models import ProjectInfo
 from llmui.core.agent.directed.sections.init.executors.analyze_dir_executor import AnalyzeDirExecutor
 from llmui.core.agent.directed.sections.init.executors.analyze_file_executor import AnalyzeFileExecutor
 from llmui.core.agent.directed.sections.init.states.analyze_project_state import AnalyzeProjectState
 from llmui.core.environment import LLMUIState, LLMUIAction
+from llmui.di.utils_providers import UtilsProviders
 
 
 @dataclass
 class AnalysisHandlerArgs:
-	ignored_files: typing.List[str]
+	project_info: ProjectInfo
 
 
 class AnalysisHandler(Handler[AnalyzeProjectState, AnalysisHandlerArgs]):
+
+	class FileType:
+		file = 0
+		dir = 1
 
 	INTERNAL_STATE_CLS = AnalyzeProjectState
 
@@ -29,7 +35,8 @@ class AnalysisHandler(Handler[AnalyzeProjectState, AnalysisHandlerArgs]):
 	def _init_internal_state(self) -> AnalyzeProjectState:
 		return AnalyzeProjectState(
 			analysis={},
-			analysis_sig={}
+			analysis_sig={},
+			types={}
 		)
 
 	def __hash(self, content: str) -> str:
@@ -57,30 +64,43 @@ class AnalysisHandler(Handler[AnalyzeProjectState, AnalysisHandlerArgs]):
 		new_signature = self.__get_signature(path)
 		return old_signature == new_signature
 
-	def __analyze(self, state: LLMUIState, dir_path: str, ignored_files: typing.List[str]) -> typing.Dict[str, str]:
+	@staticmethod
+	def __get_docs(file: str, reader: typing.Callable, docs: str) -> typing.List[str]:
+		return UtilsProviders.provide_documentation(docs).search(
+			f"""
+// {file}
+{reader(file)}
+""".strip(),
+			num_results=1
+		)
+
+	def __analyze(self, state: LLMUIState, dir_path: str, project_info: ProjectInfo):
 		for file in state.listdir(dir_path):
 
 			file_path = os.path.join(dir_path, file)
 			if file_path.startswith("./"):
 				file_path = file_path[2:]
 
-			if file_path in ignored_files or self.__skip_analysis(file_path):
+			if file_path in project_info.ignored_files or self.__skip_analysis(file_path):
 				continue
 
 			print(f"[+]Analyzing {file_path}...")
 
 			if os.path.isdir(os.path.join(state.root_path, file_path)):
-				self.__analyze(state, file_path, ignored_files)
+				self.__analyze(state, file_path, project_info)
 				self.internal_state.analysis[file_path] = self.__analyze_dir_executor((
 					state.root_path,
 					file_path,
 					self.internal_state.analysis
 				))
+				self.internal_state.types[file_path] = AnalysisHandler.FileType.dir
 			else:
 				self.internal_state.analysis[file_path] = self.__analyze_file_executor((
 					file_path,
-					state.read_content
+					state.read_content,
+					self.__get_docs(file_path, state.read_content, project_info.docs)
 				))
+				self.internal_state.types[file_path] = AnalysisHandler.FileType.file
 			self.__register_analysis(file_path)
 			self._auto_save()
 
@@ -92,6 +112,6 @@ class AnalysisHandler(Handler[AnalyzeProjectState, AnalysisHandlerArgs]):
 		self.__analyze(
 			state,
 			".",
-			args.ignored_files
+			args.project_info
 		)
 		return None

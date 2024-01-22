@@ -5,7 +5,7 @@ from llmui.core.agent.directed.sections.common.executors.format_executor import 
 from llmui.utils.format_utils import FormatUtils
 
 
-class OrderTasksExecutor(LLMExecutor[typing.Dict[str, str], typing.List[str]]):
+class OrderTasksExecutor(LLMExecutor[typing.Tuple[typing.Dict[str, str], typing.List[str]], typing.List[str]]):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -23,23 +23,30 @@ class OrderTasksExecutor(LLMExecutor[typing.Dict[str, str], typing.List[str]]):
 	def __prepare_file_task(self, files_tasks: typing.Dict[str, str]) -> str:
 		return "\n".join([
 			f"""
-{file}
+{i+1}. {file}
 {task}
 """
-			for file, task in files_tasks.items()
+			for i, (file, task) in enumerate(files_tasks.items())
 		])
 
-	def _prepare_prompt(self, arg: typing.Dict[str, str]) -> str:
-		files_tasks = arg
+	def __prepare_docs(self, docs: typing.List[str]) -> str:
+		return "\n\n".join(docs)
+
+	def _prepare_prompt(self, arg: typing.Tuple[typing.Dict[str, str], typing.List[str]]) -> str:
+		files_tasks, docs = arg
 		return f"""
-I have the following task for each file:
+Given the documentation below:
+
+{self.__prepare_docs(docs)}
+
+In what order should I implement/modify the files below::
 
 {self.__prepare_file_task(files_tasks)}
 
-In what order should I modify/implement the files? Just list the file paths.
+In what order should I modify/implement the files listed? Just list the file paths.
 """
 
-	def _prepare_output(self, output: str, arg: typing.Dict[str, str]) -> typing.List[str]:
+	def _prepare_output(self, output: str, arg: typing.Tuple[typing.Dict[str, str], typing.List[str]]) -> typing.List[str]:
 		output = self.__format_executor(output)
 		tasks = FormatUtils.extract_list_from_json_string(output)
 		return tasks

@@ -48,15 +48,16 @@ class InitHandler(MapHandler[InitState, InitHandlerArgs]):
 				project_info=ProjectInfo(
 					task=state.project_description,
 					tech_stack=args.project_info.tech_stack,
-					ignored_files=args.project_info.ignored_files
+					ignored_files=args.project_info.ignored_files,
+					docs=args.project_info.docs
 				)
 			),
 			InitStage.analysis: lambda: AnalysisHandlerArgs(
-				args.project_info.ignored_files
+				args.project_info
 			),
 			InitStage.fuse: lambda: FuseTaskHandlerArgs(
 				description=state.project_description,
-				task=args.project_info.task
+				project_info=args.project_info
 			)
 		}.get(self.stage)()
 
@@ -82,7 +83,8 @@ class InitHandler(MapHandler[InitState, InitHandlerArgs]):
 			self.internal_state.project_info = ProjectInfo(
 				tech_stack=args.project_info.tech_stack,
 				task=self.__fuse_task_handler.internal_state.fused_task,
-				ignored_files=args.project_info.ignored_files
+				ignored_files=args.project_info.ignored_files,
+				docs=args.project_info.docs
 			)
 			self.internal_state.done = True
 

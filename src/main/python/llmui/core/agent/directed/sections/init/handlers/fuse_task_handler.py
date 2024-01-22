@@ -6,12 +6,13 @@ from llmui.core.agent.directed.sections.common.models import ProjectInfo
 from llmui.core.agent.directed.sections.init.executors.fuse_task_executor import FuseTaskExecutor
 from llmui.core.agent.directed.sections.init.states.fuse_task_state import FuseTaskState
 from llmui.core.environment import LLMUIState, LLMUIAction
+from llmui.di.utils_providers import UtilsProviders
 
 
 @dataclass
 class FuseTaskHandlerArgs:
+	project_info: ProjectInfo
 	description: str
-	task: str
 
 
 class FuseTaskHandler(Handler[FuseTaskState, FuseTaskHandlerArgs]):

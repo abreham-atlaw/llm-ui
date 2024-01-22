@@ -18,6 +18,7 @@ from llmui.core.agent.directed.sections.init.states.init_state import InitStage
 from llmui.core.agent.directed.sections.main.states.task_state import TaskState, TaskStage
 from llmui.core.environment import LLMUIState, LLMUIAction
 from llmui.di.handler_providers import HandlerProviders
+from llmui.di.utils_providers import UtilsProviders
 
 
 @dataclass
@@ -36,19 +37,7 @@ class TaskHandler(MapHandler[TaskState, TaskHandlerArgs]):
 		self.__implementation_handler = ImplementationHandler(self._llm)
 		self.__test_implementation_handler = TestImplementationHandler(self._llm)
 		self.__debug_handler = DebugHandler(self._llm)
-		self.__analysis_handler = HandlerProviders.provide_analysis_handler()
-
-	# def set_handlers(
-	# 		self,
-	# 		init,
-	# 		implementation,
-	# 		test_implementation,
-	# 		debug
-	# ):
-	# 	self.__init_handler = init
-	# 	self.__implementation_handler = implementation
-	# 	self.__test_implementation_handler = test_implementation
-	# 	self.__debug_handler = debug
+		self.__analysis_db = UtilsProviders.provide_analysis_db()
 
 	def _map_handlers(self) -> typing.Dict[Stage, Handler]:
 		return {
@@ -64,11 +53,9 @@ class TaskHandler(MapHandler[TaskState, TaskHandlerArgs]):
 				project_info=args.project_info
 			),
 			TaskStage.implementation: lambda: ImplementationHandlerArgs(
-				descriptions=self.__analysis_handler.internal_state.analysis,
-				project_info=args.project_info
+				project_info=self.__init_handler.internal_state.project_info
 			),
 			TaskStage.test_implementation: lambda: TestImplementationHandlerArgs(
-				descriptions=self.__analysis_handler.internal_state.analysis,
 				project_info=args.project_info,
 				files=self.__implementation_handler.internal_state.implemented_files
 			),
@@ -92,28 +79,3 @@ class TaskHandler(MapHandler[TaskState, TaskHandlerArgs]):
 
 	def _init_internal_state(self) -> TaskState:
 		return TaskState(TaskStage.init)
-	#
-	# def export_config(self) -> typing.Dict[str, typing.Any]:
-	# 	return {
-	# 		"self": super().export_config(),
-	# 		"init": self.__init_handler.export_config(),
-	# 		"implementation": self.__implementation_handler.export_config(),
-	# 		"test_implementation": self.__test_implementation_handler.export_config(),
-	# 		"debug": self.__debug_handler.export_config()
-	# 	}
-
-	# @classmethod
-	# def load_config(cls, config: typing.Dict[str, typing.Any], *args, **kwargs) -> 'Handler':
-	# 	handler: TaskHandler = super(TaskHandler, cls).load_config(
-	# 		config.get("self"),
-	# 		*args,
-	# 		**kwargs
-	# 	)
-	#
-	# 	handler.set_handlers(
-	# 		init=InitHandler.load_config(config.get("init"), *args, **kwargs),
-	# 		implementation=ImplementationHandler.load_config(config.get("implementation"), *args, **kwargs),
-	# 		test_implementation=TestImplementationHandler.load_config(config.get("test_implementation"), *args, **kwargs),
-	# 		debug=DebugHandler.load_config(config.get("debug"), *args, **kwargs)
-	# 	)
-	# 	return handler

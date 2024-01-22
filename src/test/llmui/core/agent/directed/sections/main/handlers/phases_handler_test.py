@@ -1,7 +1,9 @@
 import json
+import os.path
 import unittest
+from datetime import datetime
 
-from llmui.config import ENVIRON_PATH, AGENT_SAVE_PATH, EXTRAS_SAVE_PATH
+from llmui.config import ENVIRON_PATH, AGENT_SAVE_PATH, EXTRAS_SAVE_PATH, AGENT_CHECKPOINTS_PATH
 from llmui.core.agent.directed.sections.common.models import ProjectInfo
 from llmui.core.agent.directed.sections.main.handlers.phases_handler import PhasesHandler, PhasesHandlerArgs
 from llmui.core.environment import LLMUIEnvironment
@@ -29,9 +31,11 @@ class PhasesHandlerTest(unittest.TestCase):
 					project_info=ProjectInfo(
 						task=environment.state.task,
 						tech_stack=extras["tech_stack"],
-						ignored_files=extras["ignored_files"]
+						ignored_files=extras["ignored_files"],
+						docs=extras["docs"]
 					)
 				)
 			)
 			handler.save(AGENT_SAVE_PATH)
+			handler.save(os.path.join(AGENT_CHECKPOINTS_PATH, f"{datetime.now().timestamp()}.json"))
 			environment.do(action)
