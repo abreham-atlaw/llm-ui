@@ -52,7 +52,7 @@ class FilesImplementationHandler(Handler[FilesImplementationState, FilesImplemen
 		return FilesImplementationState()
 
 	def __order_files(self, files_tasks: typing.Dict[str, str], project_info: ProjectInfo) -> typing.List[str]:
-		if len(files_tasks) == 1:
+		if len(files_tasks) <= 1:
 			return list(files_tasks.keys())
 		print("[+]Ordering Files...")
 		ordered_files = self.__order_executor((
@@ -65,9 +65,12 @@ class FilesImplementationHandler(Handler[FilesImplementationState, FilesImplemen
 		for file in files_tasks.keys():
 			if file not in ordered_files:
 				ordered_files.append(file)
-		for file in ordered_files:
-			if file not in files_tasks.keys():
-				ordered_files.remove(file)
+
+		ordered_files = [
+			file
+			for file in ordered_files
+			if file in files_tasks.keys()
+		]
 		return ordered_files
 
 	def __resolve_dependencies(self, state: LLMUIState, file: str, task: str, project_info: ProjectInfo) -> typing.List[str]:

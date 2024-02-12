@@ -1,0 +1,77 @@
+# Development Phases Overview
+
+The project development follows three key phases: Data Layer, Application Layer, and Presentation Layer. Each phase contributes to a modular and organized architecture, with distinct responsibilities and components.
+
+## 1. Data Layer
+
+### Purpose
+
+Responsible for managing data within the application, the Data Layer interacts with external sources like REST APIs. It handles entities using models, serializers, requests, and repositories.
+
+### Components
+
+1. **Models:**
+   - Definition: Classes or interfaces representing entities.
+
+2. **Serializers:**
+   - Definition: Classes converting models to/from JSON.
+
+3. **Requests:**
+   - Definition: Classes representing backend requests.
+
+4. **Repositories:**
+   - Definition: Classes managing model data from backend or local storage.
+
+### Interactions
+
+- Models define entity structure.
+- Serializers convert models to/from JSON.
+- Requests represent specific API calls.
+- Repositories use the network client for request execution.
+
+## 2. Application Layer
+
+### Purpose
+
+Connecting the Data and Presentation Layers, the Application Layer handles business logic, including form validation and state management. It orchestrates interactions between data and UI components.
+
+### Components
+
+1. **Forms:**
+   - Definition: Classes extending the `Form` class for form-related functionality.
+
+2. **States:**
+   - Definition: Classes representing application and form states.
+
+3. **ViewModels:**
+   - Definition: Classes extending `AsyncViewModel` for methods interacting with the Data Layer.
+
+### Interactions
+
+- Forms handle form-related logic and validation.
+- States manage application and form states.
+- ViewModels interact with the Data Layer through repository methods.
+
+## 3. Presentation Layer
+
+### Purpose
+
+Responsible for rendering the UI with Vue components, the Presentation Layer ensures a seamless user experience. It includes components for UI elements and views for complete pages.
+
+### Components
+
+1. **Components:**
+   - Definition: Vue components representing smaller UI elements.
+
+2. **Views:**
+   - Definition: Vue components representing complete pages or larger sections.
+
+### Interactions
+
+- Components represent UI elements.
+- Views use components to construct complete pages.
+- Views interact with ViewModels for dynamic content and data flow.
+
+## Conclusion
+
+The development progresses through the Data, Application, and Presentation Layers, fostering a structured and modular architecture. Collaboration among developers in each layer enhances code maintainability, scalability, and facilitates seamless teamwork.

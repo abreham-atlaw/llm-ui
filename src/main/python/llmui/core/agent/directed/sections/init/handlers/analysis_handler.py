@@ -74,6 +74,10 @@ class AnalysisHandler(Handler[AnalyzeProjectState, AnalysisHandlerArgs]):
 			num_results=1
 		)
 
+	@staticmethod
+	def __is_ignored(file_path, ignored_files: typing.List[str]) -> bool:
+		return file_path in ignored_files or os.path.basename(file_path) in ignored_files
+
 	def __analyze(self, state: LLMUIState, dir_path: str, project_info: ProjectInfo):
 		for file in state.listdir(dir_path):
 
@@ -81,7 +85,7 @@ class AnalysisHandler(Handler[AnalyzeProjectState, AnalysisHandlerArgs]):
 			if file_path.startswith("./"):
 				file_path = file_path[2:]
 
-			if file_path in project_info.ignored_files or self.__skip_analysis(file_path):
+			if self.__is_ignored(file_path, project_info.ignored_files) or self.__skip_analysis(file_path):
 				continue
 
 			print(f"[+]Analyzing {file_path}...")

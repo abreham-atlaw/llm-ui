@@ -1,0 +1,199 @@
+# Presentation Layer Testing Documentation
+
+## Introduction
+
+Presentation Layer Testing focuses on verifying the functionality and behavior of views within your application. This section provides an overview of the testing strategy and methodologies employed for testing the presentation layer, specifically concentrating on testing Vue.js components.
+
+## Testing Strategy
+
+The testing strategy for the Presentation Layer includes unit testing of Vue.js components. These tests cover the rendering of components, user interactions, and the integration of view models, ensuring that the UI elements behave as expected.
+
+### Components Under Test
+
+In the presentation layer, the primary components under test are the Vue.js components responsible for rendering UI elements and handling user interactions.
+
+### Methodologies
+
+1. **Unit Testing (Vue Test Utils):**
+   - Unit tests are created for each Vue.js component, focusing on verifying the rendering of HTML elements and the behavior of user interactions.
+   - Vue Test Utils is used to mount components, simulate user interactions, and assert on the resulting DOM.
+
+## Example: ContactUsView
+
+Consider the following example of testing the `ContactUsView` Vue.js component.
+
+**Component Implementation:**
+```vue
+<!-- src/apps/core/presentation/views/ContactView.vue -->
+
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+import ContactUsState from '../../application/states/contactUsState';
+import ContactUsViewModel from '../../application/viewmodels/contactUsViewModel';
+import BaseView from './BaseView.vue';
+import ViewModelView from '@/common/components/views/ViewModelView.vue';
+import BGImage from '@/assets/core/images/contact_01.png';
+import TextFieldComponent from '@/common/components/form/TextFieldComponent.vue';
+import LabeledFieldComponent from '@/common/components/form/LabeledFieldComponent.vue';
+import TextBoxFieldComponent from '@/common/components/form/TextBoxFieldComponent.vue';
+import AsyncButton from '@/common/components/buttons/AsyncButton.vue';
+
+export default defineComponent({
+    data() {
+        let state = ref(new ContactUsState());
+        return {
+            state,
+            viewModel: new ContactUsViewModel(state.value as any),
+            BGImage,
+        };
+    },
+
+    methods:{
+        submit(event: any){
+            event.preventDefault();
+            this.viewModel.contact();
+        }
+    },
+
+    components: {SlideInComponent, BaseView, ViewModelView, TextFieldComponent, LabeledFieldComponent, TextBoxFieldComponent, AsyncButton }
+})
+</script>
+<template>
+    <BaseView :dark-mode="true" :absolute="true">
+        <ViewModelView :view-model="viewModel" :state="state">
+            <section class="bg-cover bg-center flex flex-wrap text-light pt-36 md:pt-0 md:h-screen p-[5%]" :style="{backgroundImage: `url('${BGImage}')`}">
+                <h1 class="mt-auto text-[400%] font-extrabold uppercase text-center md:text-left w-full md:w-1/2">{{ $t('strContactUs') }}</h1>
+                <div class="w-full md:w-1/2 ml-auto flex mt-auto">
+                    <form class="w-full md:w-4/5 mx-auto backdrop-blur-xl rounded-2xl flex flex-wrap p-10" @submit="submit">
+                        <h2 class="w-full font-bold text-2xl">{{ $t("strContactForm") }}</h2>
+                        <div v-for="field, i in [
+                                {
+                                    label: 'strFirstName',
+                                    field: state.form.firstName,
+                                    type: 'text',
+                                },
+                                {
+                                    label: 'strLastName',
+                                    field: state.form.lastName,
+                                    type: 'text'
+                                },
+                                {
+                                    label: 'strEmail',
+                                    field: state.form.email,
+                                    type: 'email'
+                                },
+                                {
+                                    label: 'strPhone',
+                                    field: state.form.phone,
+                                    type: 'text'
+                                }
+                            ]" :key="i" class="w-full md:w-1/2 pr-0 md:pr-5 mt-3 md:mt-5">
+                            <LabeledFieldComponent :label="$t(field.label)">
+                                <TextFieldComponent :field="field.field" :type="field.type" :data-testid="field.label"/>
+                            </LabeledFieldComponent>
+                        </div>
+                        <div class="w-full mt-5"> 
+                            <LabeledFieldComponent :label="$t('strMessage')">
+                                <div class="h-36">
+                                <TextBoxFieldComponent class="h-full" :field="state.form.message" data-testid="strMessage"/>
+                                </div>  
+                            </LabeledFieldComponent>
+                        </div>
+                        <div class="flex w-full mt-5">
+                            <AsyncButton :state="state" class="ml-auto w-36" date-testid="submit-button">{{ $t("strSUBMIT") }}</AsyncButton>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </ViewModelView>
+    </BaseView>
+</template>
+```
+
+**Unit Test Example:**
+```typescript
+// src/tests/apps/core/presentation/ContactUsViewTest.spec.ts
+
+import { beforeEach, describe, expect, test } from "vitest";
+import { VueWrapper, mount } from '@vue/test-utils';
+import ContactView from "@/apps/core/presentation/views/ContactView.vue";
+import router from '@/router';
+import i18n from '@/il8n';
+
+const WAIT_TIMEOUT = 5000;
+
+describe(
+    "ContactView Test",
+    () => {
+        let wrapper: VueWrapper;
+
+        beforeEach(
+            () => {
+                wrapper = mount(ContactView, {
+                    global: {
+                        plugins: [i18n]
+                    }
+                });
+            }
+        )
+
+       
+
+ test(
+            "Contact Test Fail",
+            done => {
+                setTimeout(
+                    () => {
+                        const button = wrapper.find('[data-testid="submit-button"]');
+                        const messageTextBoxContainer = wrapper.find('[data-testid="strMessage"]');
+                        button.trigger("click");
+                        setTimeout(
+                            () => {
+                                expect(messageTextBoxContainer.text()).toContain("This field is required");
+                                done();
+                            },
+                            WAIT_TIMEOUT // wait for validation
+                        );
+                    },
+                    WAIT_TIMEOUT // wait for the page to load.
+                );
+            }
+        )
+
+        test(
+            "Contact Test Success",
+            done => {
+                setTimeout(
+                    () => {
+                        const button = wrapper.find('[data-testid="submit-button"]');
+                        const firstNameInput = wrapper.find('div[data-testid="strFirstName"] input');
+                        const lastNameInput = wrapper.find('div[data-testid="strLastName"] input');
+                        const emailInput = wrapper.find('div[data-testid="strEmail"] input');
+                        const phoneInput = wrapper.find('div[data-testid="strPhone"] input');
+                        const messageInput = wrapper.find('div[data-testid="strMessage"] input');
+
+                        firstNameInput.setValue("John");
+                        lastNameInput.setValue("Doe");
+                        emailInput.setValue("test@example.com");
+                        phoneInput.setValue("+251911223344");
+                        messageInput.setValue("Test Message");
+                        button.trigger("click");
+                        setTimeout(
+                            () => {
+                                expect(firstNameInput.element.value).toBe(""); // Field Cleared
+                                done();
+                            },
+                            WAIT_TIMEOUT // wait for validation
+                        );
+                    },
+                    WAIT_TIMEOUT // wait for the page to load.
+                );
+            }
+        )
+    }
+)
+```
+
+## Conclusion
+
+Presentation Layer Testing ensures that Vue.js components behave correctly, rendering UI elements and handling user interactions as expected. Unit tests using Vue Test Utils contribute to the reliability and quality of your application's presentation layer.

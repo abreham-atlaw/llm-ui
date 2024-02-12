@@ -13,7 +13,6 @@ class AnalysisDB:
 		self.__files_db = UtilsProviders.provide_vectordb()
 		self.__dirs_db = UtilsProviders.provide_vectordb()
 		self.__delimiter = delimiter
-		self.refresh()
 
 	def __is_filetype(self, file, filetype) -> bool:
 		if filetype is None:

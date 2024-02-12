@@ -1,0 +1,64 @@
+# Project Folder Structure - Documentation
+
+## Overview
+
+The project folder structure is designed to provide a well-organized and modular architecture, ensuring clarity, maintainability, and scalability. Each directory serves a specific purpose, contributing to the separation of concerns and ease of development. This documentation offers insights into the project's folder structure, detailing the purpose of each directory.
+
+## Folder Structure
+
+### 1. `src/apps`
+
+- **Purpose:** Contains all the apps of the project, with each app having its own subdirectories for data, application, and presentation layers.
+  
+- **Subdirectories:**
+  - `src/apps/$app_name/data`: Contains the data layer of the app.
+  - `src/apps/$app_name/application`: Contains the application layer of the app.
+  - `src/apps/$app_name/presentation`: Contains the presentation layer of the app.
+
+### 2. `src/assets`
+
+- **Purpose:** Contains project assets, including images, audio, video, CSS files, and more.
+
+### 3. `src/common`
+
+- **Purpose:** Contains common code that can be shared across multiple projects, ensuring code reusability and consistency.
+
+- **Subdirectories:**
+  - `src/common/components`: Contains common Vue components used across the project.
+  - `src/common/forms`: Contains common form-related functionality.
+  - `src/common/network`: Contains common networking functionality.
+  - `src/common/state`: Contains common state management functionality.
+  - `src/common/viewmodel`: Contains common view model functionality.
+
+### 4. `src/configs`
+
+- **Purpose:** Contains configuration files for the project.
+
+- **Files:**
+  - `src/configs/dataConfig.ts`: Contains data configurations like the URL of the backend.
+
+### 5. `src/di`
+
+- **Purpose:** Contains dependency injection providers.
+
+- **Files:**
+  - `src/di/CoreProviders.ts`: Contains the `CoreProviders` class, providing singleton instances of network clients, an authentication token, and storage utilities. It uses `CookieTokenStorage` for token storage and `CookieStorage` for general storage.
+
+### 6. `src/router`
+
+- **Purpose:** Contains Vue routing configurations.
+
+- **Files:**
+  - `src/router/index.ts`: Contains Vue routing configurations.
+
+The project includes dedicated directories for both unit and integration testing to ensure the robustness and reliability of the codebase. These tests contribute to the quality assurance process, helping to identify and resolve issues early in the development cycle.
+
+### 7. `src/test/`
+
+- **Purpose:** Contains tests for the project. Tests will be conducted for one component on each layer. Data - Repositories, Application - ViewModels, Presentation - Views
+
+
+
+## Conclusion
+
+The project's folder structure promotes modularity, separation of concerns, and scalability. Engineers can easily navigate and locate specific functionalities based on their responsibilities within the designated directories. This structure contributes to a streamlined development process and enhances maintainability as the project evolves.

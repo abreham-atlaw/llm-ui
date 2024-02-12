@@ -36,7 +36,7 @@ class LLMUIEnvironment(Environment[LLMUIState, LLMUIAction]):
 			task=data.get("task", "")
 		)
 
-	def __read_file(self, path) -> str:
+	def __read_file(self, path: str) -> str:
 		return self.__executor(LLMUIAction(
 			command="read",
 			args=[path]

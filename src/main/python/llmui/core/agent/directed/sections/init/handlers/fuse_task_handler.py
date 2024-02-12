@@ -28,6 +28,7 @@ class FuseTaskHandler(Handler[FuseTaskState, FuseTaskHandlerArgs]):
 		print("[+]Fusing Task...")
 		self.internal_state.fused_task = self.__executor((
 			args.description,
-			args.task
+			args.project_info.task,
+			UtilsProviders.provide_documentation(args.project_info.docs).search(args.project_info.task, num_results=3)
 		))
 		return None

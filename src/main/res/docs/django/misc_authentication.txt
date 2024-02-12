@@ -1,0 +1,190 @@
+# Authentication Documentation with Class-Based APIView
+
+## Introduction
+
+This documentation outlines the authentication setup for our Django project, emphasizing the use of Django's default authentication system. The implementation involves extending the `AbstractBaseUser` for the user model, creating a custom user manager that extends `BaseUserManager`, and configuring the authentication system to use simple tokens. Additionally, the authentication process is demonstrated using class-based `APIView` for login and signup.
+
+## User Model Configuration
+
+### Extending AbstractBaseUser
+
+To customize the user model, extend `AbstractBaseUser`. This allows us to define additional fields and methods specific to our application's needs.
+
+```python
+# apps/authentication/model/user.py
+
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db import models
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        # Implement logic to create a regular user
+        # ...
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        # Implement logic to create a superuser
+        # ...
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    # Add additional fields as needed
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    # Add REQUIRED_FIELDS if additional fields are required for user creation
+
+    def __str__(self):
+        return self.email
+```
+
+### Assigning Custom User Manager
+
+Assign the custom user manager `CustomUserManager` to the `objects` attribute in the `CustomUser` model.
+
+```python
+# models.py
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    # ...
+    objects = CustomUserManager()
+    # ...
+```
+
+### Configuring AUTH_USER_MODEL
+
+Specify the custom user model in the `AUTH_USER_MODEL` setting within the `settings.py` file.
+
+```python
+# <project_name>/settings.py
+
+AUTH_USER_MODEL = 'app_name.CustomUser'
+```
+
+Replace `'app_name'` with the actual app name containing the custom user model.
+
+**Note: Before proceeding, ensure that you have imported the custom user model from `apps/authentication/models/__init__.py` in your project.**
+```python
+# apps/authentication/models/__init__.py
+
+from .user import CustomUser  # Import the CustomUser model
+```
+
+## Token Configuration
+
+### Token Type - Simple Tokens
+
+For authentication, simple tokens will be used. Django provides a straightforward token system suitable for our project.
+
+### Token Generation on Login using Class-Based APIView
+
+During user login, a token will be generated or fetched if it already exists. This token will serve as the authentication mechanism. Below is an example using a class-based `APIView` for the login process.
+
+```python
+# apps/authentication/views/login.py
+
+from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from apps.authentication.serializers.login_serializer import LoginSerializer
+
+class LoginAPIView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+
+### Signup using Class-Based APIView
+
+In addition to the login view, we provide a class-based APIView for user signup.
+
+```python
+# apps/authentication/views/signup.py
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from apps.authentication.serializers.signup_serializer import SignupSerializer  # Import the SignupSerializer
+
+class SignupAPIView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        serializer = SignupSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+
+## Serializer Configuration
+
+### Serializers for Login and Signup
+
+To facilitate the login and signup processes, serializers must be implemented. Below are examples for the login and signup serializers.
+
+#### `LoginSerializer`:
+
+Create a new file named `login_serializer.py` in the `apps/authentication/serializers` directory.
+
+```python
+# apps/authentication/serializers/login_serializer.py
+
+from rest_framework import serializers
+from django.contrib.auth import authenticate
+from apps.authentication.models import CustomUser
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        if email and password:
+            user = authenticate(email=email, password=password)
+
+            if not user:
+                raise serializers.ValidationError("Incorrect credentials. Please try again.")
+
+        else:
+            raise serializers.ValidationError("Both email and password are required for login.")
+
+        data['user'] = user
+        return data
+```
+
+#### `SignupSerializer`:
+
+Create a new file named `signup_serializer.py` in the `apps/authentication/serializers` directory.
+
+```python
+# apps/authentication/serializers/signup_serializer.py
+
+from rest_framework import serializers
+from ..models import CustomUser
+
+class SignupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'password', 'additional_field_if_any')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = CustomUser.objects.create_user(**validated_data)
+        return user
+```
+
+### Using Serializers in Views
+
+In both the login and signup views, the created serializers need to be utilized. Update the `LoginAPIView` and `SignupAPIView` accordingly.
+
+Note: Don't forget that each serializer will be implemented in it's own file in the apps/<app_name>/serializers directory. 

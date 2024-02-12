@@ -66,6 +66,7 @@ Implement or modify the file {file} with the following task:
 {file_task}
 
 Just send the complete code for the file {file}. Don't add no comments unless you necessarily have to. Feel free to send the original code back if the file needs no modification.
+Note: Make sure to leave any placeholder in the code. Use the provided context and documentation to fill in the values.
 """.replace("\n\n\n\n","\n")
 		return prompt
 

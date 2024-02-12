@@ -19,5 +19,6 @@ And consider the following task:
 Here is a list of implemented relevant files to this task:
 {FormatUtils.generate_files_list(files, description=analysis)}
 
-Just make a numbered list of the test files I should implement or modify. Drop files I don't need to work on.
+Just make a numbered list of the test files I should implement or modify. Drop files I don't need to work on. 
+List the test files with with a brief task to perform on the file.
 """

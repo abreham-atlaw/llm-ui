@@ -11,7 +11,7 @@ export default abstract class Form{
 
 		let valid = true;
 
-		for(let field of this.getFields()){
+		for(const field of this.getFields()){
 			if(!(await field.isValid())){
 				valid = false
 			}

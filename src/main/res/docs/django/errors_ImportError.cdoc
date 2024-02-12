@@ -1,0 +1,47 @@
+## Common Errors and Troubleshooting in Django Apps
+
+This document lists some common errors you might encounter while developing a Django app, along with suggested solutions.
+
+### Error 1: `ImportError: cannot import name 'ExampleView' from 'apps.example.views' (/apps/example/views/__init__.py)`
+
+**Description:** This error indicates that the specified view (`ExampleView`) is not being imported correctly in the `__init__.py` file of the `apps.example.views` module.
+
+**Solution:**
+
+* **Explicitly import the view:** Add the following line to the `apps.example.views/__init__.py` file:
+
+```python
+from .example import ExampleView
+```
+
+* Replace `ExampleView` with the actual name of your view and adjust the module path accordingly.
+
+**Example:**
+```python
+# Correct import statement for ExampleView
+from .example import ExampleView
+```
+
+**Important Note:** This applies not only to views but also to models and serializers. Ensure they are explicitly imported in their respective `__init__.py` files for proper usage throughout your app.
+
+### Error 2: `ImportError: cannot import name 'ExampleModel' from 'apps.example.models' (/apps/example/models/__init__.py)`
+
+**Description:** This error indicates that the specified model (`ExampleModel`) is not being imported correctly in the `__init__.py` file of the `apps.example.models` module.
+
+**Solution:**
+
+* **Explicitly import the model:** Add the following line to the `apps.example.models/__init__.py` file:
+
+```python
+from .example import ExampleModel
+```
+
+* Replace `ExampleModel` with the actual name of your model and adjust the module path accordingly.
+
+**Example:**
+```python
+# Correct import statement for ExampleModel
+from .example import ExampleModel
+```
+
+**Important Note:** Similar import errors may occur for serializers or other components. Ensure explicit imports in their respective `__init__.py` files for smooth functioning of your Django app.

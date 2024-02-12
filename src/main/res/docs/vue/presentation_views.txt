@@ -1,0 +1,91 @@
+# Presentation Layer - Views Documentation
+
+## Overview
+
+Views within the presentation layer represent complete pages or larger sections of the user interface. These Vue components encapsulate the layout, structure, and logic for specific features or functionalities. This documentation provides insights into creating and utilizing views within the project architecture to ensure a well-organized and user-friendly interface.
+
+## Views
+
+### 1. Contact Us View
+
+The `ContactUsView` represents a view that allows users to submit contact information and messages. It includes a form with fields for first name, last name, email, phone, message, and age. Below is an example:
+
+```vue
+<!-- src/apps/core/presentation/views/ContactUsView.vue -->
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+import ContactUsState from '../../application/states/contactUsState';
+import ContactUsViewModel from '../../application/viewmodels/contactUsViewModel';
+import BaseView from './BaseView.vue';
+import ViewModelView from '@/common/components/views/ViewModelView.vue';
+import BGImage from '@/assets/core/images/contact_01.png';
+import TextFieldComponent from '@/common/components/form/TextFieldComponent.vue';
+import LabeledFieldComponent from '@/common/components/form/LabeledFieldComponent.vue';
+import TextBoxFieldComponent from '@/common/components/form/TextBoxFieldComponent.vue';
+import AsyncButton from '@/common/components/buttons/AsyncButton.vue';
+import "leaflet/dist/leaflet.css";
+import { LMap, LTileLayer, LMarker } from "@vue-leaflet/vue-leaflet";
+import SlideInComponent from '@/common/components/animation/SlideInComponent.vue';
+
+export default defineComponent({
+  data() {
+    let state = ref(new ContactUsState());
+    return {
+      state,
+      viewModel: new ContactUsViewModel(state.value as any),
+      BGImage,
+    };
+  },
+  methods: {
+    submit(event: any) {
+      event.preventDefault();
+      this.viewModel.contact();
+    },
+  },
+  components: { SlideInComponent, LMap, LMarker, LTileLayer, BaseView, ViewModelView, TextFieldComponent, LabeledFieldComponent, TextBoxFieldComponent, AsyncButton }
+});
+</script>
+
+<template>
+  <BaseView :dark-mode="true" :absolute="true">
+    <ViewModelView :view-model="viewModel" :state="state">
+      <!-- Contact Us Form Section -->
+      <section class="bg-cover bg-center flex flex-wrap text-light pt-36 md:pt-0 md:h-screen p-[5%]" :style="{backgroundImage: `url('${BGImage}')`}">
+        <h1 class="mt-auto text-[400%] font-extrabold uppercase text-center md:text-left w-full md:w-1/2">{{ $t('strContactUs') }}</h1>
+        <div class="w-full md:w-1/2 ml-auto flex mt-auto">
+          <SlideInComponent>
+            <form class="w-full md:w-4/5 mx-auto backdrop-blur-xl rounded-2xl flex flex-wrap p-10" @submit="submit">
+              <h2 class="w-full font-bold text-2xl">{{ $t("strContactForm") }}</h2>
+              <!-- Form Fields Section -->
+              <div v-for="field, i in [
+                  { label: 'strFirstName', field: state.form.firstName, type: 'text' },
+                  { label: 'strLastName', field: state.form.lastName, type: 'text' },
+                  { label: 'strEmail', field: state.form.email, type: 'email' },
+                  { label: 'strPhone', field: state.form.phone, type: 'text' }
+                ]" :key="i" class="w-full md:w-1/2 pr-0 md:pr-5 mt-3 md:mt-5">
+                <LabeledFieldComponent :label="$t(field.label)">
+                  <TextFieldComponent :field="field.field" :type="field.type" />
+                </LabeledFieldComponent>
+              </div>
+              <!-- Message Field Section -->
+              <div class="w-full mt-5">
+                <LabeledFieldComponent :label="$t('strMessage')">
+                  <div class="h-36">
+                    <TextBoxFieldComponent class="h-full" :field="state.form.message" />
+                  </div>
+                </LabeledFieldComponent>
+              </div>
+              <!-- Submit Button Section -->
+              <div class="flex w-full mt-5">
+                <AsyncButton :state="state" class="ml-auto w-36">{{ $t("strSUBMIT") }}</AsyncButton>
+              </div>
+            </form>
+          </SlideInComponent>
+        </div>
+      </section>
+    </ViewModelView>
+  </BaseView>
+</template>
+```
+
+These examples serve as templates for creating views tailored to specific features or functionalities within the project. Engineers can adapt and extend these views based on their project requirements to ensure a well-structured and visually appealing user interface.

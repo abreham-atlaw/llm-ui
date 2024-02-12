@@ -1,0 +1,100 @@
+# Data Layer - Requests Documentation
+
+## Overview
+
+Requests in the data layer are essential for facilitating communication between the frontend and backend of the project. They encapsulate specific API calls, defining details such as URLs, request methods, and parameters. Engineers can utilize these examples as templates for creating requests tailored to their needs, ensuring efficient data retrieval and transmission.
+
+## Requests
+
+### 1. GetAllProductsRequest
+
+The `GetAllProductsRequest` class serves as a template for fetching all products from the backend. Engineers can replicate and modify this class for similar data retrieval scenarios. Below is an example:
+
+```typescript
+// src/apps/core/data/requests/GetAllProductsRequest.ts
+import Request from "@/common/network/Request";
+import type Product from "../models/Product";
+import ProductSerializer from "../serializers/ProductSerializer";
+
+export class GetAllProductsRequest extends Request<Product[]> {
+
+    private serializer = new ProductSerializer();
+
+    constructor() {
+        super({
+            url: "core/products/list/",
+            method: "GET"
+        });
+    }
+
+    deserializeResponse(response: any): Product[] {
+        return this.serializer.deserializeMany(response); // Deserializing an array using deserializeMany
+    }
+}
+```
+
+**Note: The `deserializeMany` method from the `ProductSerializer` class is used in this example to efficiently deserialize an array of products. Typically, this method is beneficial when handling multiple data entries, such as when fetching all products. Engineers can refer to this approach when working with arrays of data during the deserialization process.**
+
+### 2. GetProductDetailRequest
+
+The `GetProductDetailRequest` class demonstrates how to create a request for fetching detailed information about a specific product. Engineers can adapt and extend this class for similar use cases. Here's an example:
+
+```typescript
+// src/apps/core/data/requests/GetProductDetailRequests.ts
+import Request from "@/common/network/Request";
+import type Product from "../models/Product";
+import ProductSerializer from "../serializers/ProductSerializer";
+
+export class GetProductDetailRequest extends Request<Product> {
+
+    private serializer = ProductSerializer();
+
+    constructor(id: string) {
+        super({
+            url: "core/products/detail",
+            params: {
+                "id": id
+            },
+            method: "GET"
+        });
+    }
+
+    deserializeResponse(response: any): Product {
+        return this.serializer.deserialize(response);
+    }
+}
+```
+
+### 3. CreateItemRequest
+
+The `CreateItemRequest` class serves as a template for creating a request to add new items. Engineers can replicate and modify this class for similar data creation scenarios. Below is an example:
+
+```typescript
+// src/apps/core/data/requests/CreateItemRequest.ts
+import Request from "@/common/network/Request";
+import type Item from "../models/Item";
+import ItemSerializer from "../serializers/ItemSerializer";
+
+export class CreateItemRequest extends Request<Item> {
+
+    private serializer = ItemSerializer();
+
+    constructor(item: Item) {
+        super({
+            url: "core/items/create",
+            method: "POST",
+            data: item,
+        });
+    }
+
+    deserializeResponse(response: any): Item {
+        return this.serializer.deserialize(response);
+    }
+}
+```
+
+**Note: Typically, for each distinct endpoint, it is advisable to create a dedicated request class, and each class should have its own file. For instance, if there are endpoints like '/items/list' (for listing items), '/item/detail/{id}' (for item detail), and '/items/create' (for creating an item), consider creating three classes: `ListItemsRequest` (which extends `Request<Item[]>`), `DetailItemRequest` (which extends `Request<Item>`), and `CreateItemRequest` (which extends `Request<Item>`), each in their respective files. This approach helps maintain a modular and organized codebase.**
+
+**Additionally, serializers, such as `ProductSerializer` and `ItemSerializer`, contain the methods `deserializeMany` and `serializeMany` to deserialize and serialize, respectively, arrays of data or instances. These methods are useful for handling multiple data entries efficiently. Engineers can refer to these serializer methods when working with arrays of data during serialization and deserialization processes.**
+
+Engineers can leverage these examples as blueprints for crafting requests, adapting parameters, URLs, and data formats to suit the specific requirements of their project.

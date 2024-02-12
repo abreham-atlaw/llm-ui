@@ -25,7 +25,7 @@ class TestImplementationHandler(ImplementationHandler):
 	def _generate_project_task(self, project_info: ProjectInfo) -> str:
 		return self.__task_to_testing_executor((
 				project_info.task,
-				UtilsProviders.provide_documentation(project_info.docs).search("testing", num_results=1)
+				UtilsProviders.provide_documentation(project_info.docs).search("testing intro", num_results=1)
 			))
 
 	def _get_list_files_args(self, state: LLMUIState, args: TestImplementationHandlerArgs) -> ListFilesHandlerArgs:

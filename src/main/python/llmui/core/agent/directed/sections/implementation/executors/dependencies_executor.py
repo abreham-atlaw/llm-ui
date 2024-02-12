@@ -18,10 +18,11 @@ class DependenciesExecutor(LLMExecutor[
 			llm=self._llm,
 			output_format="""
 {
-	"0": path/to/first/dependency,
-	"1": path/to/second/dependency,
-	"2": path/to/third/dependency
+	"0": path/to/first/file,
+	"1": path/to/second/file,
+	"2": path/to/third/file
 }
+If there are no files leave '{}'
 """
 		)
 
@@ -55,7 +56,7 @@ Given the following relevant files:
 On which files does the file and task below directly depend on?
 {self.__generate_file_descriptions(list(file_tasks.keys()), file_tasks)}
 
-Just simply list the files paths.
+Just simply list the files paths. Try minimizing the number of dependencies
 """
 
 	def _prepare_output(self, output: str, arg: typing.Tuple[typing.List[str], typing.Dict[str, str],  typing.Dict[str, str], str, typing.List[str], str]) -> typing.List[str]:

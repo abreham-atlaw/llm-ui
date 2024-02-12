@@ -17,8 +17,8 @@ class PhasesHandlerTest(unittest.TestCase):
 			environ_file=ENVIRON_PATH
 		)
 
-		# handler = PhasesHandler(LLMProviders.provide_default_llm())
-		handler = PhasesHandler.load_handler(AGENT_SAVE_PATH, LLMProviders.provide_default_llm())
+		handler = PhasesHandler(LLMProviders.provide_default_llm())
+		# handler = PhasesHandler.load_handler(AGENT_SAVE_PATH, LLMProviders.provide_default_llm())
 
 		with open(EXTRAS_SAVE_PATH, "r") as file:
 			extras = json.load(file)

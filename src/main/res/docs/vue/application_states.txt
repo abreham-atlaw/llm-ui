@@ -1,0 +1,47 @@
+# Application Layer - States Documentation
+
+## Overview
+
+States within the application layer represent the current state of the application, encapsulating data, forms, and other relevant information. These states are crucial for managing and orchestrating the flow of data within the application, providing a central point for state management. This documentation offers insights into creating and utilizing states within the project architecture.
+
+## States
+
+### 1. Contact Us State Example
+
+The `ContactUsState` class serves as an illustrative example of a state designed to manage the data and form state related to a contact us feature. It is essential to note that the following code is a sample and should not be copied directly into a project. States are typically used for setting and getting values, similar to data classes, and don't normally contain methods except for properties. They serve as data classes that are used to store and retrieve values.
+
+```typescript
+// src/apps/core/application/states/contactUsState.ts
+import { AsyncState } from "@/common/state/baseState";
+import ContactUsForm from "../forms/contactUsForm";
+
+export default class ContactUsState extends AsyncState {
+
+    form = new ContactUsForm();
+}
+```
+
+In this example, the `ContactUsState` includes a `form` instance of the `ContactUsForm` class, providing a central location to manage the form state.
+
+### 2. Product State Illustrative Example
+
+For scenarios involving product listing, consider the following illustrative example of a `ProductState` class. This example is intended to illustrate how such a state could be implemented to manage the state related to displayed products. It is crucial to understand that the provided code is for demonstration purposes and should not be directly implemented in a project. States generally do not contain methods, except for properties, and are primarily used as data classes for storing and retrieving values.
+
+```typescript
+// src/apps/core/application/states/productState.ts
+import BaseState from "@/common/state/baseState";
+import type Product from "../../data/models/product";
+
+export default class ProductState extends BaseState {
+
+    products?: Product[];
+    featuredProduct?: Product;
+    comingSoonProducts?: Product[];
+}
+```
+
+This example showcases a `ProductState` class that includes properties such as `products`, `featuredProduct`, and `comingSoonProducts`, providing a central location to manage the state related to product information. Engineers should use this as an illustration and adapt the state class based on the specific data requirements of their project. By following a centralized state management approach, the application layer becomes more organized and maintainable. Remember that the provided sample code is for illustrative purposes and should serve as a starting point for customization according to the project's unique needs.
+
+## Conclusion
+
+States within the application layer serve as central repositories for managing data and form state, providing a structured approach to state management. Engineers can use these examples as templates, adapting them based on the specific requirements of their project to ensure a cohesive and modular state management strategy within the project architecture. Remember that the provided sample codes are illustrative examples and should not be directly implemented; they serve as a starting point for customization in line with the project's unique needs.

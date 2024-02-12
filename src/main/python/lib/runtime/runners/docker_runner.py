@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import docker
 from datetime import datetime
 
-from docker.errors import BuildError
+from docker.errors import BuildError, ContainerError
 
 from .runner import Runner
 
@@ -28,12 +28,14 @@ class DockerRunner(Runner):
 	def run(self, path: str) -> str:
 		try:
 			name = self.__build_image(path)
-			return self.__client.containers.run(name)
+			return str(self.__client.containers.run(name))
 		except BuildError as e:
 			message = ""
 			for line in e.build_log:
 				if 'stream' in line:
 					message += line['stream'].strip()
 			return message
+		except ContainerError as e:
+			return e.stderr.decode("utf-8")
 		except Exception as ex:
 			return str(ex)

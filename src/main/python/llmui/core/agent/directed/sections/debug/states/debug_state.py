@@ -10,9 +10,10 @@ class DebugStage(Stage):
 	check_stuck = 4
 	user_help = 5
 	error_extraction = 6
-	list_files = 7
-	modify = 8
-	done = 9
+	cause_extraction = 7
+	list_files = 8
+	modify = 9
+	done = 10
 
 
 @dataclass

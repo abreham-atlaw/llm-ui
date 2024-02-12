@@ -1,0 +1,136 @@
+# Data Layer Testing Documentation
+
+## Introduction
+
+Data Layer Testing is a crucial aspect of ensuring the reliability and accuracy of data-related operations within your application. This section outlines the testing strategy and methodologies employed for testing the data layer, specifically focusing on repositories responsible for data retrieval and modification.
+
+**Warning: Only repositories will be tested on the data layer, and no other component should be tested within this scope. Models, requests, and serializers will not be tested, and test files won't be created for them.**
+
+## Testing Strategy
+
+The primary goal of Data Layer Testing is to validate that the repository methods function as intended, handling data operations seamlessly. This strategy employs a fusion of unit and integration testing to thoroughly assess the repository's capabilities.
+
+### Components Under Test
+
+In the data layer, the key component under test is the repository, which encapsulates interactions with the underlying data source, such as databases or external APIs.
+
+**Note: One test file will be created per repository to streamline the testing process and maintain a clear focus on individual data components. Engineers should check the repository implementation and adjust the test methods accordingly based on the actual methods present.**
+
+## Example: ProductRepository
+
+Consider the following example of testing the `ProductRepository`, responsible for managing product-related data operations. Please note that these samples are for illustrative purposes, and the actual repositories might contain different methods with various functionalities.
+
+**Repository Implementation:**
+
+```typescript
+// src/apps/core/data/repositories/ProductRepository.ts
+
+import CoreProviders from "@/di/coreProviders";
+import type Product from "../models/Product";
+import CreateProductRequest from "../requests/CreateProductRequest";
+import GetAllProductsRequest from "../requests/GetAllProductsRequest";
+import GetProductDetailRequest from "../requests/GetProductDetailRequest";
+
+export default class ProductRepository {
+    private networkClient = CoreProviders.provideNetworkClient();
+
+    async getAllProducts(): Promise<Product[]> {
+        return await this.networkClient.execute(new GetAllProductsRequest());
+    }
+
+    async getProduct(id: string): Promise<Product> {
+        return await this.networkClient.execute(new GetProductDetailRequest(id));
+    }
+
+    async createProduct(product: Product): Promise<Product> {
+        return await this.networkClient.execute(new CreateProductRequest(product));
+    }
+
+    async customMethod(){
+        // Custom Method
+    }
+}
+```
+
+**Unit Test Example:**
+```typescript
+// src/tests/unit/apps/core/data/ProductRepositoryTest.spec.ts
+
+import Product from "@/apps/core/data/models/Product";
+import ProductRepository from "@/apps/core/data/repositories/ProductRepository";
+import { beforeEach, describe, test, expect, assertType } from "vitest";
+
+describe(
+    "Product Repository Test",
+    () => {
+        let repo: ProductRepository;
+
+        function testProduct(product: Product) {
+            assertType<Product>(product);
+            assertType<string>(product.id);
+            assertType<string>(product.name);
+            assertType<string>(product.description);
+            assertType<Array<string>>(product.images);
+            assertType<boolean>(product.comingSoon);
+        }
+
+        beforeEach(() => {
+            repo = new ProductRepository();
+        })
+
+        test(
+            "Get All Test",
+            async () => {
+                const products = await repo.getAllProducts();
+                assertType<Array<Product>>(products);
+                expect(products.length).toBeGreaterThan(0);
+                for (const product of products) {
+                    testProduct(product);
+                }
+            }
+        )
+
+        test(
+            "Get Product Test",
+            async () => {
+                const products = await repo.getAllProducts();
+                if(products.length === 0){
+                    throw Error("Empty Products");
+                }
+                const productId = products[0].id;
+                const product = await repo.getProduct(productId);
+                testProduct(product);
+            }
+        )
+
+        test(
+            "Create Product Test",
+            async () => {
+                const product = new Product({
+                    id: null,
+                    name: "Test Name",
+                    description: "Test Description",
+                    images: ["http://dummyurl.com/image0", "http://dummyurl.com/image1", "http://dummyurl.com/image2"],
+                    comingSoon: false
+                });
+                const createdProduct = await repo.createProduct(product);
+                testProduct(createdProduct);
+            }
+        )
+
+        // Additional test methods for other repository methods
+        test(
+            "Custom Method Test",
+            async () => {
+                const result = await repo.customMethod();
+                // Assertions for the custom method result
+            }
+        )
+    }
+)```
+**Note: In situations where a valid attribute(like id) is required(like fetchById) just fetch all instances and use the attribute of the first instance.**
+**Note: Ensure that test methods are adjusted as needed to cover the specific repository methods implemented in your application. The provided samples are examples, and the actual repositories may contain different methods with various functionalities. Engineers should adapt the test suite to match the repository's specific methods and functionalities.** 
+
+## Conclusion
+
+Data Layer Testing ensures that the data-related components of your application operate correctly, maintaining the integrity of the stored information. Implementing both unit and integration tests provides a comprehensive evaluation, contributing to the overall reliability and quality of your software. Note that the provided samples are examples, and the actual repositories may contain different methods with various functionalities. Engineers should adapt the test suite to match the repository's specific methods and functionalities.

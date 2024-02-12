@@ -1,0 +1,13 @@
+**Models:**
+At the core of the data layer are models, which define the structure and characteristics of entities used within the project. These entities, represented as classes or interfaces, encapsulate the properties and behaviors of objects like users, products, or any other relevant entities.
+
+**Serializers:**
+To facilitate seamless communication with the backend, serializers come into play. These classes extend a generic Serializer and handle the conversion of model instances to and from JSON format. They ensure that data can be efficiently transmitted between the frontend and backend components.
+
+**Requests:**
+For every API endpoint, there will be a set of request classes typically stored in their own files, serving as configuration classes for API calls rather than containing methods of their own. These classes are responsible for communicating with the backend API. Each endpoint will have at least one request class, and if it supports multiple methods (such as PUT, POST, GET), there will be a separate request class for each method. Examples of request classes include `GetAllItemsRequest`, `GetItemByIdRequest`, `CreateItemRequest`, and so on. These classes extend a generic Request and encapsulate the details of a specific API call, such as the URL, request method, and parameters. Requests make use of Axios and are instrumental in retrieving and sending data to the server.
+
+**Repositories:**
+Repositories act as intermediaries between the application layer and the data layer. They encapsulate methods for managing data, including fetching, modifying, and creating entities. Repositories interact with the network client to execute requests, fetching data from the backend or storing it locally, such as in cookies.
+
+The interaction within the data layer typically follows a flow where models define the entities, serializers facilitate data serialization, requests serve as configuration classes for API calls (with separate files for each request class), and repositories orchestrate data operations. This structured approach enhances modularity and maintainability, allowing for easy updates and modifications within the data layer without affecting other components of the application. The data layer's clear responsibilities contribute to a more organized and scalable architecture.

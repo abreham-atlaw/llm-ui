@@ -1,0 +1,132 @@
+# Presentation Layer - Components Documentation
+
+## Overview
+
+Components within the presentation layer are Vue components designed to handle specific functionalities or represent smaller sections of the user interface. These components contribute to building cohesive and reusable UI elements across various views. This documentation provides insights into creating and utilizing components within the project architecture.
+
+## Components
+
+### 1. BaseButton Component
+
+The `BaseButton` component is a foundational button component used consistently throughout the project to maintain a standardized UI. It accepts parameters such as background color (`bg`), text color (`textColor`), and other common styling properties. Below is an example:
+
+```vue
+<!-- src/common/components/buttons/BaseButton.vue -->
+<template>
+  <button :style="{ backgroundColor: bg, color: textColor }">
+    <slot></slot>
+  </button>
+</template>
+
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
+
+export default defineComponent({
+  props: {
+    bg: String,
+    textColor: String,
+  },
+});
+</script>
+```
+
+Engineers can leverage the `BaseButton` component for consistent styling across the application, ensuring a cohesive and professional look.
+
+### 2. AsyncButton Component
+
+The `AsyncButton` component extends the `BaseButton` component and provides additional functionality for handling asynchronous operations. It renders a loading indicator or the actual content based on the state provided. Below is an example:
+
+```vue
+<!-- src/common/components/buttons/AsyncButton.vue -->
+<template>
+  <BaseButton :bg="bg" :textColor="textColor" :disabled="loading" @click="handleClick">
+    <template v-if="loading">
+      <span>Loading...</span>
+    </template>
+    <template v-else>
+      <slot></slot>
+    </template>
+  </BaseButton>
+</template>
+
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
+import BaseButton from './BaseButton.vue';
+
+export default defineComponent({
+  extends: BaseButton,
+  props: {
+    state: Object as PropType<{ status: string }>,
+  },
+  computed: {
+    loading(): boolean {
+      return this.state?.status === 'loading';
+    },
+  },
+  methods: {
+    handleClick() {
+      if (!this.loading) {
+        this.$emit('click');
+      }
+    },
+  },
+});
+</script>
+```
+
+The `AsyncButton` component enhances user experience by providing visual feedback during asynchronous operations.
+
+### 3. FieldComponents
+
+Field components, including `EnumFieldComponent`, `TextBoxFieldComponent`, and `TextFieldComponent`, are input components designed to accept form fields and handle value changes. These components also render the error associated with the field. Engineers can adapt and extend these components for various form input types.
+
+```vue
+<!-- src/common/components/form/EnumFieldComponent.vue -->
+<template>
+  <div>
+    <label>{{ label }}</label>
+    <select v-model="field.value">
+      <option v-for="option in options" :key="option.value" :value="option.value">{{ option.label }}</option>
+    </select>
+    <span v-if="field.error" class="error">{{ field.error }}</span>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import Field from '@/common/forms/fields';
+
+export default defineComponent({
+  props: {
+    field: Object as typeof Field,
+    label: String,
+    options: Array,
+  },
+});
+</script>
+```
+
+These field components simplify form creation and provide a consistent approach to handling different input types.
+
+### 4. LoadingSpinner Component
+
+The `LoadingSpinner` component serves as the default loading indicator used across the project. It provides a clean and visually appealing loading animation during asynchronous operations.
+
+```vue
+<!-- src/common/components/status/LoadingSpinner.vue -->
+<template>
+  <div class="loading-spinner"></div>
+</template>
+
+<style scoped>
+.loading-spinner {
+  /* Add styling for loading spinner */
+}
+</style>
+```
+
+Engineers can utilize the `LoadingSpinner` component to enhance user experience during data fetching or other time-consuming processes.
+
+## Conclusion
+
+Components within the presentation layer contribute to a consistent and visually appealing user interface. By following these examples and adapting them based on specific project requirements, engineers can maintain modularity and reusability within the presentation layer of the project architecture.

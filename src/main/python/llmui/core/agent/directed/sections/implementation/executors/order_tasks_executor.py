@@ -29,21 +29,18 @@ class OrderTasksExecutor(LLMExecutor[typing.Tuple[typing.Dict[str, str], typing.
 			for i, (file, task) in enumerate(files_tasks.items())
 		])
 
-	def __prepare_docs(self, docs: typing.List[str]) -> str:
-		return "\n\n".join(docs)
-
 	def _prepare_prompt(self, arg: typing.Tuple[typing.Dict[str, str], typing.List[str]]) -> str:
 		files_tasks, docs = arg
 		return f"""
 Given the documentation below:
 
-{self.__prepare_docs(docs)}
+{FormatUtils.format_docs(docs)}
 
-In what order should I implement/modify the files below::
+In what order should I implement/modify the files below. I've included the tasks for each file:
 
 {self.__prepare_file_task(files_tasks)}
 
-In what order should I modify/implement the files listed? Just list the file paths.
+Just list the file paths.
 """
 
 	def _prepare_output(self, output: str, arg: typing.Tuple[typing.Dict[str, str], typing.List[str]]) -> typing.List[str]:

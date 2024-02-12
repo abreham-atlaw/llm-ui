@@ -1,0 +1,170 @@
+# Application Layer Testing Documentation
+
+## Introduction
+
+Application Layer Testing focuses on validating the behavior of view models within your application. This section provides an overview of the testing strategy and methodologies employed for testing the application layer, specifically concentrating on view models responsible for managing application logic and state.
+
+## Testing Strategy
+
+The testing strategy for the Application Layer encompasses unit testing of view models. These tests cover the initialization phase and method calls triggered by user interactions, ensuring that the view models properly manage the application state and logic.
+
+### Components Under Test
+
+In the application layer, the primary component under test is the view model, responsible for orchestrating the interaction between the data layer and the presentation layer.
+
+### Methodologies
+
+1. **Unit Testing:**
+   - Unit tests are created for each view model, focusing on specific aspects of their functionality.
+   - Tests include the initialization phase to ensure that the view model correctly sets up the initial state.
+   - Method call tests verify that the state updates as expected after executing methods triggered by user interactions.
+
+## Example: ProductListViewModel
+
+Consider the following example of testing the `ProductListViewModel`, responsible for managing the state of a product list.
+
+**View Model Implementation:**
+```typescript
+// src/apps/core/application/viewmodels/ProductListViewModel.ts
+
+import AsyncViewModel from "@/common/viewmodel/asyncViewModel";
+import type ProductListState from "../states/ProductsListState";
+import ProductRepository from "../../data/repositories/ProductRepository";
+
+export class ProductListViewModel extends AsyncViewModel<ProductListState> {
+    private repository = new ProductRepository();
+
+    public async onInit(): Promise<void> {
+        await super.onInit();
+        this.state.products = await this.repository.getAllProducts();
+        this.state.comingSoonProduct = this.state.products!.filter((product) => product.comingSoon);
+        this.state.featuredProduct = this.state.products[0];
+        this.state.products = this.state.products!.filter((product) => !product.comingSoon);
+    }
+}
+```
+
+**Unit Test Example:**
+```typescript
+// src/tests/apps/core/application/ProductListViewModelTest.spec.ts
+
+import ProductListState from "@/apps/core/application/states/ProductsListState";
+import { ProductListViewModel } from "@/apps/core/application/viewmodels/ProductListViewModel";
+import Product from "@/apps/core/data/models/Product";
+import { AsyncStatus } from "@/common/state/baseState";
+import { describe, beforeEach, test, assertType, expect } from "vitest";
+
+describe(
+    "ProductListViewModel Test",
+    () => {
+        let state: ProductListState;
+        let viewModel: ProductListViewModel;
+
+        beforeEach(
+            async () => {
+                state = new ProductListState();
+                viewModel = new ProductListViewModel(state);
+                await viewModel.initialize();
+            }
+        ) 
+
+        test(
+            "Products List Test",
+            async () => {
+                expect(state.initState.status).toEqual(AsyncStatus.done);
+                assertType<Array<Product>>(state.products);
+                assertType<Product>(state.featuredProduct);
+                assertType<Array<Product>>(state.comingSoonProduct);
+            }
+        )
+    }
+)
+```
+
+## Example: ContactUsViewModel
+
+Consider the following example of testing the `ContactUsViewModel`, responsible for managing the state of a contact form.
+
+**View Model Implementation:**
+```typescript
+// src/apps/core/application/viewmodels/ContactUsViewModel.ts
+
+import AsyncViewModel from "@/common/viewmodel/asyncViewModel";
+import type ContactUsState from "../states/ContactUsState";
+import UtilsRepository from "../../data/repositories/utilsRepository";
+import ContactUsForm from "../forms/ContactUsForm";
+
+export default class ContactUsViewModel extends AsyncViewModel<ContactUsState> {
+    private repository = new UtilsRepository();
+
+    async contact() {
+        await this.asyncCall(async () => {
+            await this.state.form.validate(true);
+            await this.repository.contact({
+                fullName: `${this.state.form.firstName.getValue()!} ${this.state.form.firstName.getValue()!}`,
+                email: this.state.form.email.getValue()!,
+                phoneNumber: this.state.form.phone.getValue()!,
+                message: this.state.form.message.getValue()!
+            });
+            this.state.form = new ContactUsForm();
+        });
+    }
+}
+```
+
+**Unit Test Example:**
+```typescript
+// src/tests/apps/core/application/ContactUsViewModelTest.spec.ts
+
+import ContactUsState from "@/apps/core/application/states/ContactUsState";
+import ContactUsViewModel from "@/apps/core/application/viewmodels/ContactUsViewModel";
+import { AsyncStatus } from "@/common/state/baseState";
+import { describe, beforeEach, test, expect, assertType } from "vitest";
+
+describe(
+    "ContactUsViewModel Test",
+    () => {
+        let state: ContactUsState;
+        let viewModel: ContactUsViewModel;
+
+        beforeEach(
+            async () => {
+                state = new ContactUsState();
+                viewModel = new ContactUsViewModel(state);
+                await viewModel.initialize();
+            }
+        ) 
+
+        test(
+            "Contact Test Fail",
+            async () => {
+                await viewModel.contact(); // Form not filled
+                assertType<Error>(state.error);
+                expect(state.status).toEqual(AsyncStatus.failed);
+                for(const field of state.form.getFields()){
+                    assertType<string>(field.error);
+                }
+            }
+        )
+
+        test(
+            "Contact Test Success",
+            async () => {
+                state.form.firstName.setValue("John"); // Set values to the form
+                state.form.lastName.setValue("Doe");
+                state.form.email.setValue("test@example.com");
+                state.form.message.setValue("Test Message");
+                state.form.phone.setValue("+251911223344");
+
+                await viewModel.contact();
+                expect(state.error).toBeNull();
+                expect(state.status).toEqual(AsyncStatus.done);
+            }
+        )
+    }
+)
+```
+
+## Conclusion
+
+Application Layer Testing ensures that view models operate correctly, managing the application state and logic. Unit tests provide confidence in the initialization and method call behaviors, contributing to the overall reliability and quality of your software.

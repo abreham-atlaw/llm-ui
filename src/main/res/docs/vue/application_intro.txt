@@ -1,0 +1,19 @@
+# Application Layer - Introduction
+
+The application layer serves as the bridge between the data and presentation layers, encapsulating the business logic of the project. This layer orchestrates the flow of data, processes user interactions, and manages the state of the application. Through forms, states, and view models, the application layer implements key functionalities such as form validation, state management, and interaction with repositories.
+
+## Forms
+
+Forms in the application layer are classes that extend the `Form` class, providing a structured approach to handle user input and validation. These forms consist of fields with custom validation logic, enabling real-time validation and interaction with the backend API. Engineers can create and customize forms based on the data requirements of various components within the application.
+
+## States
+
+States within the application layer represent the current state of the application, including data, forms, and other relevant information. States can be synchronous or asynchronous, with the latter accommodating scenarios where data fetching or processing may take time. Engineers can design states to encapsulate the necessary data for specific components, facilitating clean and organized state management.
+
+## View Models
+
+View models play a crucial role in connecting the application layer with the repositories in the data layer. These classes, extending the `AsyncViewModel` class, implement methods that handle user interactions and trigger data-related operations. It is common practice to have one view model for each view (page) in the application, facilitating a clear separation of concerns.
+
+For example, consider the scenario of listing and displaying details of items. In this case, you may have two views: `ListItemsView` and `DetailItemView`. Consequently we create two different view models, such as `ListItemsViewModel` (fetching a list of items) and `DetailItemsViewModel` (fetching a single item).
+
+In summary, while the common practice is to have one view model per view, exceptions may arise, particularly when pages exhibit different looks but serve the same functional purpose. Engineers should carefully consider the specific requirements of each scenario to determine the most appropriate architecture for their project. The flexibility demonstrated in these documentation examples allows engineers to adapt the structure to meet the unique needs of their projects, resulting in a robust and maintainable application layer within the project architecture.

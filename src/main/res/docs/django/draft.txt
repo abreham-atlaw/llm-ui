@@ -1,0 +1,74 @@
+The project will be using Django with Django Restframework.
+
+The project will be classified into multiple smaller features which we will call apps. For eg. core, auth, payment,...
+Each app will have the following components:
+    - models: These are normal Django Models that will be used for storing data. They will have their own folder called models and all the models will be imported on apps/${appname}/models/__init__.py. One model will have its own file and is imported on the __init__.py. 
+    - serializers: These are djangorestframework serializers that will convert the json to local classes(while validating them) and convert local classes to json. They are stored in the folder apps/${appname}/serializers/. Each serializer will have it's own file. 
+    - views: These are djangorestframework APIViews that handle the business logic of the app. They will be stored in a the folder apps/${appname}/views/ each view will have it's own file. 
+    - urls: This is a single file that contains the url mapping to views in the app. It'll be the file apps/${appname}/urls.py. This will later be included in the main urls.py using djangos include feature.
+
+
+So to build a certain functionality typically the following steps are taken:
+1. write the required models for the functionality. Sometimes models might not be required if so this step can be skipped.
+2. write the required serializers for the functionality. If there are no required serializers this step can be skipped.
+3. write the requried views for the functionality.
+4. map the views to urls in the app's urls.py
+5. include the app's urls.py in the main urls.py. If this is already done this step can be skipped.
+
+Heres the folder structure of a typical project(note: names like model1 and model2 should be replaced by actual names of the classes):
+
+.
+├── apps
+│    ├── app1
+│    │    ├── __init__.py
+│    │    ├── models
+│    │    │    ├── __init__.py
+│    │    │    ├── model1.py
+│    │    │    └── model2.py
+│    │    ├── serializers
+│    │    │    ├── __init__.py
+│    │    │    ├── serializer1.py
+│    │    │    └── serializer2.py
+│    │    ├── urls.py
+│    │    └── views
+│    │        ├── __init__.py
+│    │        ├── view1.py
+│    │        └── view2.py
+│    ├── app2
+│    │    ├── __init__.py
+│    │    ├── models
+│    │    │    ├── __init__.py
+│    │    │    ├── model1.py
+│    │    │    └── model2.py
+│    │    ├── serializers
+│    │    │    ├── __init__.py
+│    │    │    ├── serializer1.py
+│    │    │    └── serializer2.py
+│    │    ├── urls.py
+│    │    └── views
+│    │        ├── __init__.py
+│    │        ├── view1.py
+│    │        └── view2.py
+│    └── app3
+│        ├── __init__.py
+│        ├── models
+│        │    ├── __init__.py
+│        │    ├── model1.py
+│        │    └── model2.py
+│        ├── serializers
+│        │    ├── __init__.py
+│        │    ├── serializer1.py
+│        │    └── serializer2.py
+│        ├── urls.py
+│        └── views
+│            ├── __init__.py
+│            ├── view1.py
+│            └── view2.py
+├── Dockerfile
+├── manage.py
+└── project
+     ├── asgi.py
+     ├── __init__.py
+     ├── settings.py
+     ├── urls.py
+     └── wsgi.py

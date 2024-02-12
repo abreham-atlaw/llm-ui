@@ -36,7 +36,7 @@ class PhasesHandler(Handler[PhasesState, PhasesHandlerArgs]):
 
 	def __get_doc(self, docs) -> str:
 		documentation = UtilsProviders.provide_documentation(docs)
-		return documentation.search("phases", num_results=1)[0]
+		return documentation.search("phases of development", num_results=1)[0]
 
 	def _handle(self, state: LLMUIState, args: PhasesHandlerArgs) -> Optional[LLMUIAction]:
 		if self.internal_state.phases is None:

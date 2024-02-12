@@ -26,7 +26,7 @@ export default class NetworkClient{
 
 	async execute<T>(request: Request<T>): Promise<T>{
 
-		let response: AxiosResponse = await this.getClient()(request.config);
+		const response: AxiosResponse = await this.getClient()(request.config);
 		
 		if(response.status >= 400){
 			throw new ApiException(response.status, response.data);

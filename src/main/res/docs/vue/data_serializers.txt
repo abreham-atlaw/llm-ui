@@ -1,0 +1,79 @@
+# Data Layer - Serializers Documentation
+
+## Overview
+
+Serializers in the data layer are essential components responsible for the conversion of model instances to and from JSON format. They facilitate seamless communication between the frontend and backend by ensuring that data can be efficiently transmitted and interpreted on both ends.
+
+## Serializers
+
+### 1. Product Serializer
+
+The `ProductSerializer` class is an exemplary implementation within the project. It extends a generic `Serializer` class and includes methods for serializing and deserializing `Product` model instances. Below is an example of the `ProductSerializer`:
+
+```typescript
+// src/apps/core/data/serializers/productSerializer.ts
+import Serializer from "@/common/serializers/serializer";
+import Product from "../models/product";
+
+export default class ProductSerializer extends Serializer<Product, Record<string, any>> {
+    
+    serialize(instance: Product): Record<string, any> {
+        return {
+            id: instance.id,
+            name: instance.name,
+            description: instance.description,
+            images: instance.images,
+            coming_soon: instance.comingSoon
+        }
+    }
+
+    deserialize(data: Record<string, any>): Product {
+        return new Product({
+            id: data["id"],
+            name: data["name"],
+            description: data["description"],
+            images: data["images"],
+            comingSoon: data["coming_soon"]
+        });
+    }
+}
+```
+
+In this example, the `ProductSerializer` includes a `deserialize` method that converts a JSON object (`data`) into a `Product` instance.
+
+### 2. User Serializer
+
+For user-related entities, the `UserSerializer` class serves a similar purpose. It extends the generic `Serializer` class and includes methods for serializing and deserializing `User` model instances. Here's an example:
+
+```typescript
+// src/apps/core/data/serializers/userSerializer.ts
+import Serializer from "@/common/serializers/serializer";
+import User from "../models/user";
+
+export default class UserSerializer extends Serializer<User, Record<string, any>> {
+    
+    serialize(instance: User): Record<string, any> {
+        return {
+            id: instance.id,
+            username: instance.username,
+            email: instance.email,
+            role: instance.role
+        }
+    }
+
+    deserialize(data: Record<string, any>): User {
+        return new User({
+            id: data["id"],
+            username: data["username"],
+            email: data["email"],
+            role: data["role"]
+        });
+    }
+}
+```
+
+In this `UserSerializer`, the `deserialize` method converts a JSON object (`data`) into a `User` instance.
+
+## Conclusion
+
+Serializers in the data layer provide a crucial mechanism for converting model instances to and from JSON, facilitating seamless communication with the backend. These serializers ensure data consistency and integrity, contributing to a robust and interoperable data layer within the project architecture.

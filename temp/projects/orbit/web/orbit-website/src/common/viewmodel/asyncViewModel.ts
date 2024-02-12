@@ -53,7 +53,7 @@ export default class AsyncViewModel<S extends BaseState> extends ViewModel<S>{
 		if(asyncState != undefined){
 			asyncStateGetter = () => {return asyncState}
 		}	
-		let handler = new FunctionalAsyncHandler<S>(
+		const handler = new FunctionalAsyncHandler<S>(
 			this,
 			onEvent,
 			onError,

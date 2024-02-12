@@ -11,6 +11,8 @@ class ReadExecutor(ActionExecutor):
 
 	@staticmethod
 	def __read(file_path: str) -> str:
+		if file_path.startswith("/"):
+			file_path = file_path[1:]
 		if not os.path.exists(file_path):
 			return ""
 		with open(file_path) as file:

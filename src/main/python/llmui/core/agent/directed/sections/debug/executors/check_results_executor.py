@@ -11,17 +11,18 @@ class CheckResultsExecutor(LLMExecutor[str, bool]):
 		return f"""
 I just got this output when I run a docker file:
 {arg}
-Did it run successfully and passed all the testes? Format you answer in the following format:
+
+How many tests failed? Format you answer in the following json format:
 {{
-passed: 0 // 0 for fail and 1 for pass
+"failed": <number of failed tests>
 }}
-Use 0 if the test failed to run at all as well
+If there was a build error put "1" as the number of failed tests.
 """
 
 	@staticmethod
-	def __extract_passed_value(json_string) -> bool:
+	def __extract_failed_value(json_string) -> bool:
 		# Define the pattern to match the "passed" value
-		pattern = r'"passed":\s*(\d)'
+		pattern = r'"failed":\s*(\d)'
 
 		# Search for the pattern in the JSON string
 		match = re.search(pattern, json_string)
@@ -36,4 +37,4 @@ Use 0 if the test failed to run at all as well
 			raise Exception(f"Parsing Error: couldn't parse the string {json_string}")
 
 	def _prepare_output(self, output: str, arg: str) -> bool:
-		return self.__extract_passed_value(output)
+		return not self.__extract_failed_value(output)

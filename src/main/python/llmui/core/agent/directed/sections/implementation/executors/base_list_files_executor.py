@@ -13,14 +13,15 @@ class BaseListFilesExecutor(LLMExecutor[I, typing.Dict[str, str]], typing.Generi
 		self.__format_executor = FormatExecutor(
 			output_format="""
 {
-"path/to/file": "task on file...",
-"path/to/file1": "task for file1"
-}
+"path/to/file": "descriptions or modifications for file...", //both keys and values are stings
+"path/to/file1": "descriptions or modifications for file1"
+} 
 
-Make sure the whole key strings are valid file paths. 
-And remove files that don't need modifications, duplicate files and invalid paths. 
-Also remove directories(keys should be a file not a dir) 
+Make sure the whole key strings are valid file paths.
+And remove files that don't need modifications, duplicate files and invalid paths.
+Also remove directories(keys should be a file not a dir)
 Don't leave details from the tasks.
+Just leave {} if there are no files.
 """,
 			llm=self._llm
 		)

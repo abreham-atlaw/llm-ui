@@ -1,0 +1,63 @@
+# Django Model Testing Documentation
+
+## Introduction
+
+Testing models in a Django application is crucial for ensuring that the data structures and business logic defined in your models work as expected. This documentation will guide you through the process of testing models in your Django app.
+
+## Writing Model Tests
+
+Model tests in Django typically involve creating instances of models, saving them to the database, and then querying the database to verify that the expected data is present. Django provides a TestCase class specifically designed for model testing, known as `django.test.TestCase`.
+
+### Example Model Test
+
+Let's consider an example where you have a `Book` model in your `core` app, and you want to test the basic functionalities of this model.
+
+```python
+# apps/core/models.py
+
+from django.db import models
+
+class Book(models.Model):
+    title = models.CharField(max_length=255)
+    author = models.CharField(max_length=255)
+    publication_date = models.DateField()
+
+# apps/core/tests/test_book_model.py
+
+from django.test import TestCase
+from apps.core.models import Book // Use absolute import rather than relative import
+from datetime import date
+
+class BookModelTestCase(TestCase):
+    def setUp(self):
+        Book.objects.create(
+            title='Test Book',
+            author='Test Author',
+            publication_date=date(2022, 1, 1)
+        )
+
+    def test_book_attributes(self):
+        book = Book.objects.get(title='Test Book')
+        self.assertEqual(book.author, 'Test Author')
+        self.assertEqual(book.publication_date, date(2022, 1, 1))
+
+    def test_book_str_representation(self):
+        book = Book.objects.get(title='Test Book')
+        self.assertEqual(str(book), 'Test Book by Test Author')
+```
+
+In this example, the `setUp` method is used to create an instance of the `Book` model before each test. The `test_book_attributes` method checks if the attributes of the created book match the expected values. The `test_book_str_representation` method verifies if the string representation of the book is as expected.
+
+## Running Model Tests
+
+To run only the model tests for your Django app, use the following command:
+
+```bash
+python manage.py test apps.<app_name>.tests
+```
+
+Replace `<app_name>` with the name of your app (e.g., `core`). This command will discover and run only the tests defined in the `tests/` directory within the specified app.
+
+## Conclusion
+
+Testing models is an essential part of maintaining the integrity of your Django application's data structures. By following the guidelines in this documentation, you can create effective model tests to ensure that your models function correctly and meet the requirements of your application.

@@ -1,0 +1,27 @@
+## Common Errors and Troubleshooting in Django Apps
+
+This document lists some common errors you might encounter while developing a Django app, along with suggested solutions.
+
+### Error: `django.urls.exceptions.NoReverseMatch`
+
+**Description:** This error occurs when the `reverse` function is unable to find a matching URL pattern based on the provided name and arguments.
+
+**Common Causes:**
+
+1. **Incorrect URL name:** Ensure the name used in `reverse` exactly matches the name defined in your `urls.py` file.
+2. **Missing arguments:** Provide all required arguments for the URL pattern, as specified in `urls.py`.
+3. **Extra arguments:** Avoid providing more arguments than the URL pattern expects.
+4. **Using `reverse` before app URLs are included:** If using `reverse` in models or serializers, ensure app URLs are correctly included in the main `urls.py`.
+5. **Typos and case sensitivity:** Pay attention to typos and case sensitivity in both the URL name and arguments (Django URLs are case-sensitive).
+
+**Solution:**
+
+* **Construct the URL directly:** Instead of relying on `reverse`, use string formatting or concatenation to build the URL manually. This provides more control and avoids potential matching issues.
+
+```python
+# Using reverse (error prone):
+url = reverse('my_url_name', args=[some_id])
+
+# Constructing the URL directly:
+url = f"/some-path/{some_id}/"
+```

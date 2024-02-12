@@ -16,8 +16,7 @@ I had the following task:
 Write a new task for testing the functionalities of the above task which is aligned to the following documentation:
 {FormatUtils.format_docs(docs)}
 
-Note: Pay extra emphasis to the documentation
-Note: Make the task simple something like "Test the following components: ..."
+Note: Make the task a sentence or two long.
 """
 
 	def _prepare_output(self, output: str, arg: typing.Tuple[str, typing.List[str]]) -> str:

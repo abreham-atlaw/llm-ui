@@ -1,0 +1,116 @@
+# Django Rest Framework User Authentication Documentation
+
+## Introduction
+
+This documentation outlines the implementation of user authentication using Django Rest Framework (DRF). The authentication process involves the use of class-based APIViews to handle user login and signup functionalities. Additionally, authentication tokens are generated for secure communication between the client and the server.
+
+## Views Section
+
+The views section details the implementation of two main APIViews: `LoginAPIView` and `SignupAPIView`. These views are responsible for handling user login and signup, respectively.
+
+### LoginAPIView
+
+The `LoginAPIView` is responsible for handling user login and generating authentication tokens.
+
+##### File: `apps/authentication/views/login.py`
+
+```python
+# apps/authentication/views/login.py
+
+from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from apps.authentication.serializers.login_serializer import LoginSerializer
+
+class LoginAPIView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+
+### SignupAPIView
+
+The `SignupAPIView` is responsible for handling user signup and generating authentication tokens.
+
+##### File: `apps/authentication/views/signup.py`
+
+```python
+# apps/authentication/views/signup.py
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from apps.authentication.serializers.signup_serializer import SignupSerializer
+
+class SignupAPIView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        serializer = SignupSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+
+### Import Views in `__init__.py`
+
+Make sure to import the views in the `__init__.py` file located at `apps/<app_name>/views/__init__.py` for proper integration.
+
+```python
+# apps/authentication/views/__init__.py
+
+# Import views to ensure proper integration
+from .login import LoginAPIView
+from .signup import SignupAPIView
+# Add more imports as needed
+```
+
+## URL Configuration
+
+To integrate these views into the project, dedicated `urls.py` files need to be created within the authentication app.
+
+### Authentication URLs
+
+##### File: `apps/authentication/urls.py`
+
+```python
+# apps/authentication/urls.py
+
+from django.urls import path
+from .views import LoginAPIView, SignupAPIView
+
+urlpatterns = [
+    path('login/', LoginAPIView.as_view(), name='login'),
+    path('signup/', SignupAPIView.as_view(), name='signup'),
+    # Add more URL patterns as needed
+]
+```
+
+### Include Authentication URLs in Project URLs
+
+Ensure that the authentication app's `urls.py` is included in the main `urls.py` of the project.
+
+##### File: `<project_name>/urls.py`
+
+```python
+# <project_name>/urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/auth/', include('apps.authentication.urls')),  # Include authentication app URLs
+    # Add more URL patterns as needed
+]
+```
+
+This concludes the views section, covering the implementation of class-based APIViews for user login and signup functionalities, along with the necessary URL configurations.

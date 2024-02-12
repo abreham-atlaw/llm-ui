@@ -30,7 +30,7 @@ export default class ViewModel<S extends BaseState>{
 		if(this.state.initState.status != AsyncStatus.none){
 			return;
 		}
-		let initHandler = new FunctionalAsyncHandler<BaseState>(
+		const initHandler = new FunctionalAsyncHandler<BaseState>(
 			this,
 			async () => {
 				await this.onInit()

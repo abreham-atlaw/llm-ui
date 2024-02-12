@@ -1,0 +1,78 @@
+# Data Layer - Models Documentation
+
+## Overview
+
+In the data layer, models play a crucial role in representing and defining the structure of entities utilized within the project. These entities, whether users, products, or other relevant objects, are encapsulated within classes or interfaces, providing a clear blueprint for their attributes and behaviors.
+
+## Models
+
+### 1. Product Model
+
+The `Product` model serves as an illustrative example within the project. It represents the fundamental structure for products, including properties like `id`, `name`, `description`, `images`, and `comingSoon`. Below is an example implementation:
+
+```typescript
+// src/apps/core/data/models/product.ts
+export default class Product {
+    id: string;
+    name: string;
+    description: string;
+    images: string[];
+    comingSoon: boolean;
+
+    constructor({
+        id, name, description, images, comingSoon
+    }: {
+        id: string,
+        name: string,
+        description: string,
+        images: string[],
+        comingSoon: boolean
+    }) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.images = images;
+        this.comingSoon = comingSoon;
+    }
+
+    get coverImage(): string {
+        return this.images[0];
+    }
+}
+```
+
+In this example, the `Product` model includes properties such as `id`, `name`, `description`, `images`, and `comingSoon`. The constructor ensures the initialization of these properties, and a computed property `coverImage` is added for convenience.
+
+### 2. User Model
+
+For user-related entities, the `User` model serves as a typical representation. It includes properties like `id`, `username`, `email`, and `role`. Here's an example:
+
+```typescript
+// src/apps/core/data/models/user.ts
+export default class User {
+    id: string;
+    username: string;
+    email: string;
+    role: string;
+
+    constructor({
+        id, username, email, role
+    }: {
+        id: string,
+        username: string,
+        email: string,
+        role: string
+    }) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.role = role;
+    }
+}
+```
+
+In this `User` model, properties like `id`, `username`, `email`, and `role` are defined, and the constructor initializes these properties during object creation.
+
+## Conclusion
+
+Models in the data layer provide a structured representation of entities, ensuring consistency and clarity in defining the project's data structure. These models serve as the foundation for serialization, requests, and repositories within the data layer, contributing to a well-organized and maintainable architecture.

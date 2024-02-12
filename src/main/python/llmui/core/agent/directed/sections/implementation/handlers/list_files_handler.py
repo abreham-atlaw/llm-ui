@@ -118,7 +118,7 @@ class ListFilesHandler(Handler[ListFilesState, ListFilesHandlerArgs]):
 		self.internal_state.tasks = self.__get_files(
 			project_info=args.project_info,
 			files=FormatUtils.filter_files(state.files, args.project_info.ignored_files),
-			analysis=self.__analysis_db.get_analysis(args.project_info.task),
+			analysis=self.__analysis_db.get_analysis(args.project_info.task, num_files=20),
 			mode=args.mode,
 			files_to_test=args.files_to_test,
 			reader=state.read_content,

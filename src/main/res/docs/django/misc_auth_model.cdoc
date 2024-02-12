@@ -1,0 +1,84 @@
+Certainly! Below is the extracted model section for the documentation based on the provided information:
+
+---
+
+# Model Section
+
+The model section of this documentation outlines the structure and customization of the user model used for authentication within the Django project. The authentication process involves extending the `AbstractBaseUser`, creating a custom user manager, and configuring the authentication system to use simple tokens.
+
+## User Model Configuration
+
+### Extending AbstractBaseUser
+
+To customize the user model, we extend the `AbstractBaseUser`. This allows the definition of additional fields and methods specific to our application's needs.
+
+#### File: `apps/authentication/models/user.py`
+
+```python
+# apps/authentication/models/user.py
+
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db import models
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        # Implement logic to create a regular user
+        # ...
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        # Implement logic to create a superuser
+        # ...
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    # Add additional fields as needed
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    # Add REQUIRED_FIELDS if additional fields are required for user creation
+
+    def __str__(self):
+        return self.email
+```
+
+### Assigning Custom User Manager
+
+Assign the custom user manager `CustomUserManager` to the `objects` attribute in the `CustomUser` model.
+
+#### File: `apps/authentication/models/user.py`
+
+```python
+# apps/authentication/models/user.py
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    # ...
+    objects = CustomUserManager()
+    # ...
+```
+
+### Configuring AUTH_USER_MODEL
+
+Specify the custom user model in the `AUTH_USER_MODEL` setting within the `settings.py` file.
+
+#### File: `<project_name>/settings.py`
+
+```python
+# <project_name>/settings.py
+
+AUTH_USER_MODEL = 'app_name.CustomUser'
+```
+
+Replace `'app_name'` with the actual app name containing the custom user model.
+
+**Note: Before proceeding, ensure that you have imported the custom user model from `apps/authentication/models/__init__.py` in your project.**
+
+```python
+# apps/authentication/models/__init__.py
+
+from .user import CustomUser  # Import the CustomUser model
+```
+
+This concludes the model section, which covers the configuration and customization of the user model for authentication in the Django project.
+
+---

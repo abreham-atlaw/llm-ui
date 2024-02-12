@@ -1,0 +1,64 @@
+# URLs
+
+URLs in our project serve as a crucial component for mapping incoming requests to the appropriate views within each app. The URLs for different apps are organized in a single file, typically named `urls.py`, located in the `apps/${appname}/` directory. This section provides an overview of the URL structure and includes a sample example to illustrate the URL mapping process.
+
+## URL Structure
+
+### File Organization
+
+URLs for a specific app are stored in the `apps/${appname}/` directory within the `urls.py` file. This organization ensures that all URL mappings for an app are centralized in one location.
+
+```plaintext
+.
+├── apps
+│   ├── app1
+│   │   ├── __init__.py
+│   │   ├── models
+│   │   │   # (Similar structure as mentioned in the Models section)
+│   │   ├── serializers
+│   │   │   # (Similar structure as mentioned in the Serializers section)
+│   │   ├── urls.py  # Example: URL mappings for app1
+│   │   └── views
+│   │       # (Similar structure as mentioned in the Views section)
+│   ├── app2
+│   │   # (Similar structure as app1)
+│   └── app3
+│       # (Similar structure as app1)
+```
+
+### Sample URL Mapping
+
+Consider an example where an app named `example` has a view named `ProfileView` for retrieving user profiles. The URL mapping would be defined in `apps/example/urls.py`:
+
+```python
+# apps/example/urls.py
+
+from django.urls import path
+from .views.profile_view import ProfileView
+
+urlpatterns = [
+    path('profiles/', ProfileView.as_view(), name='profile-list'),
+    # Additional URL patterns can be added as needed
+]
+```
+
+In this example, the `urlpatterns` list includes a path mapping for the `ProfileView` to handle requests to retrieve user profiles. The path is specified as `'profiles/'`, and it is associated with the `ProfileView.as_view()` method, indicating that this view should handle requests to this URL.
+
+### Including App URLs in Main URLs
+
+To ensure that the app's URLs are recognized and processed by the project, they need to be included in the main `urls.py` file. Add the following line to `project/urls.py`:
+
+```python
+# project/urls.py
+
+from django.contrib import admin
+from django.urls import path, include  # Import include function
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('app1/', include('apps.app1.urls')),  # Include app1 URLs
+    # Include additional app URLs as needed
+]
+```
+
+In this example, the `include` function is used to include the URLs defined in `apps/app1/urls.py`. This step ensures that the app's URL mappings are incorporated into the main project, allowing for a seamless and organized integration of various app functionalities.

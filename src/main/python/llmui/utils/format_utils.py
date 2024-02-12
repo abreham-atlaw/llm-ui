@@ -87,3 +87,11 @@ class FormatUtils:
 	@staticmethod
 	def format_docs(docs: typing.List[str]) -> str:
 		return "<<DOCUMENTATION>>\n\n\n"+"\n\n".join(docs)+"\n\n\n<</DOCUMENTATION>>"
+
+	@staticmethod
+	def format_content(content: str) -> str:
+		return f"""
+```
+{content.strip()}
+```
+"""

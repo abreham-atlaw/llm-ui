@@ -1,0 +1,71 @@
+# Application Layer - View Models Documentation
+
+## Overview
+
+View models within the application layer play a pivotal role in orchestrating interactions between the application layer and repositories in the data layer. These classes extend the `AsyncViewModel` class, implementing methods that handle user interactions and trigger data-related operations. This documentation provides insights into creating and utilizing view models within the project architecture.
+
+## View Models Examples
+
+### 1. Contact Us View Model
+
+The `ContactUsViewModel` class serves as an example of how a view model could be implemented to handle interactions related to the contact us feature. It extends the `AsyncViewModel` class and includes methods like `contact` for processing user submissions. Below is an example:
+
+```typescript
+// src/apps/core/application/viewmodels/contactUsViewModel.ts
+import AsyncViewModel from "@/common/viewmodel/asyncViewModel";
+import type ContactUsState from "../states/contactUsState";
+import UtilsRepository from "../../data/repositories/utilsRepository";
+import ContactUsForm from "../forms/contactUsForm";
+
+export default class ContactUsViewModel extends AsyncViewModel<ContactUsState> {
+
+    private repository = new UtilsRepository();
+
+    async contact() {
+        this.asyncCall(
+            async () => {
+                await this.state.form.validate(true);
+                await this.repository.contact({
+                    fullName: `${this.state.form.firstName.getValue()} ${this.state.form.firstName.getValue()}`,
+                    email: this.state.form.email.getValue(),
+                    phoneNumber: this.state.form.phone.getValue(),
+                    message: this.state.form.message.getValue()
+                });
+                this.state.form = new ContactUsForm();
+            }
+        );
+    }
+}
+```
+
+In this example, the `ContactUsViewModel` class interacts with the `ContactUsState` and the `UtilsRepository` to handle the contact us functionality.
+
+### 2. Product List View Model
+
+For scenarios involving product listing, the `ProductListViewModel` class can be created as an example of how a view model could manage interactions related to displaying and fetching product data. It extends the `AsyncViewModel` class and includes the `onInit` method for initializing the view model when the component is mounted.
+
+```typescript
+// src/apps/core/application/viewmodels/productListViewModel.ts
+import AsyncViewModel from "@/common/viewmodel/asyncViewModel";
+import type ProductListState from "../states/productsListState";
+import ProductRepository from "../../data/repositories/productRepository";
+
+export class ProductListViewModel extends AsyncViewModel<ProductListState> {
+
+    private repository = new ProductRepository();
+
+    public async onInit(): Promise<void> {
+        await super.onInit();
+        this.state.products = await this.repository.getAllProducts();
+        this.state.comingSoonProduct = this.state.products!.filter((product) => product.comingSoon);
+        this.state.featuredProduct = this.state.products[0];
+        this.state.products = this.state.products!.filter((product) => !product.comingSoon);
+    }
+}
+```
+
+Engineers are encouraged to use these example templates for creating view models tailored to the specific requirements of their project. By implementing methods that interact with states and repositories, view models become essential components for managing the application's business logic.
+
+## Conclusion
+
+View models within the application layer serve as orchestrators for user interactions and data-related operations. The provided examples offer a starting point, and engineers should adjust and customize them based on the specific needs of their projects. This adaptation ensures a clean and modular approach to handling business logic within the project architecture.

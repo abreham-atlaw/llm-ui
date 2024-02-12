@@ -1,0 +1,65 @@
+# Data Layer - Repositories Documentation
+
+## Overview
+
+Repositories in the data layer act as intermediaries between the application layer and the backend or local storage. They encapsulate methods for managing entities, such as fetching, modifying, and creating data. This documentation provides insights into creating and utilizing repositories within the project architecture.
+
+## Repositories
+
+### 1. Product Repository
+
+The `ProductRepository` class exemplifies a repository for managing product-related entities. It provides methods for fetching all products and retrieving details about a specific product from the backend. Engineers can use this class as a reference for creating repositories for other entities. Below is an example:
+
+```typescript
+// src/apps/core/data/repositories/productRepository.ts
+import CoreProviders from "@/di/coreProviders";
+import type Product from "../models/product";
+import GetAllProductsRequest from "../requests/GetAllProductsRequest";
+import GetProductDetailRequest from "../requests/GetProductDetailRequest";
+
+export default class ProductRepository {
+
+    private networkClient = CoreProviders.provideNetworkClient();
+
+    async getAllProducts(): Promise<Product[]> {
+        return await this.networkClient.execute(new GetAllProductsRequest());
+    }
+
+    async getProduct(id: string): Promise<Product> {
+        return await this.networkClient.execute(new GetProductDetailRequest(id));
+    }
+}
+```
+
+In this example, the `ProductRepository` class utilizes a network client provided by the dependency injection framework to make requests to the backend.
+
+### 2. User Repository
+
+For managing user-related entities, the `UserRepository` class can be created using a similar structure. It would include methods for fetching user data, updating user profiles, and performing other user-related operations.
+
+```typescript
+// src/apps/core/data/repositories/userRepository.ts
+import CoreProviders from "@/di/coreProviders";
+import type User from "../models/user";
+import GetUserDetailsRequest from '../requests/GetUserDetailsRequest';
+import UpdateUserProfileRequest from '../requests/UpdateUserProfileRequest';
+
+export default class UserRepository {
+
+    private networkClient = CoreProviders.provideNetworkClient();
+
+    async getUserDetails(userId: string): Promise<User> {
+        return await this.networkClient.execute(new GetUserDetailsRequest(userId));
+    }
+
+    async updateUserProfile(userId: string, updatedProfile: any): Promise<User> {
+        return await this.networkClient.execute(new UpdateUserProfileRequest(userId, updatedProfile));
+    }
+}
+```
+
+Engineers can model repositories based on the requirements of their entities, providing a consistent and centralized interface for managing data interactions.
+
+## Conclusion
+
+Repositories in the data layer serve as crucial components for managing data interactions between the application layer and the backend or local storage. By following these examples and adapting them to specific entity needs, engineers can maintain a clean and modular architecture within the project.

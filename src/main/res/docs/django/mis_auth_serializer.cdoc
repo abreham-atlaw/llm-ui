@@ -1,0 +1,73 @@
+# Serializers Section
+
+The serializers section of this documentation outlines the creation and usage of Django Rest Framework serializers to handle the conversion of data during user authentication. The authentication process includes implementing serializers for login and signup functionality, ensuring proper data validation and transformation.
+
+## Serializer Configuration
+
+### Serializers for Login and Signup
+
+To facilitate the login and signup processes, serializers must be implemented. Below are examples for the login and signup serializers.
+
+#### `LoginSerializer`:
+
+Create a new file named `login_serializer.py` in the `apps/authentication/serializers` directory.
+
+##### File: `apps/authentication/serializers/login_serializer.py`
+
+```python
+# apps/authentication/serializers/login_serializer.py
+
+from rest_framework import serializers
+from django.contrib.auth import authenticate
+from apps.authentication.models import CustomUser
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        if email and password:
+            user = authenticate(email=email, password=password)
+
+            if not user:
+                raise serializers.ValidationError("Incorrect credentials. Please try again.")
+
+        else:
+            raise serializers.ValidationError("Both email and password are required for login.")
+
+        data['user'] = user
+        return data
+```
+
+#### `SignupSerializer`:
+
+Create a new file named `signup_serializer.py` in the `apps/authentication/serializers` directory.
+
+##### File: `apps/authentication/serializers/signup_serializer.py`
+
+```python
+# apps/authentication/serializers/signup_serializer.py
+
+from rest_framework import serializers
+from apps.authentication.models import CustomUser
+
+class SignupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'password', 'additional_field_if_any')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = CustomUser.objects.create_user(
+            email=validated_data["email"],
+            password=validated_data["password"],
+            // Add other fields if applicable for your user model
+        )
+        return user
+```
+This concludes the serializers section, which covers the creation of serializers for login and signup functionalities, allowing for the proper handling of data during user authentication.
+
+---

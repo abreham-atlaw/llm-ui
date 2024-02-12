@@ -1,0 +1,47 @@
+# Overview of Testing
+
+## Introduction
+
+Testing plays a crucial role in software development, ensuring the reliability, functionality, and performance of an application. This section provides an in-depth exploration of testing methodologies and strategies employed during the development process.
+
+## Strategy for Testing
+
+The testing strategy is divided into three primary layers: Data Layer, Application Layer, and Presentation Layer. Each layer focuses on testing specific components, with tailored tests to validate their functionality and interactions.
+
+> **Warning:** It is advised to test only the specified components within each layer.
+> - In the Data Layer, only repositories are the classes to be tested. 
+> - In the Application Layer, only view models are the classes to be tested. 
+> - In the Presentation Layer, only views are the classes to be tested.
+> - Testing other components in these layers is not recommended.
+
+### 1. Testing the Data Layer
+
+> **Note:** The provided `ProductRepository` example illustrates methods such as `getAllProducts`, `getProduct`, and `createProduct`. However, repositories in practice may not contain identical methods; hence, engineers should adjust testing accordingly. The key emphasis is on thoroughly testing every major functionality within the repository.
+
+The Data Layer's testing explicitly centers around **repositories**, which are the only classes to be tested in this layer. Each repository handles data operations, and unit tests are conducted on every method of each repository to ensure accurate data retrieval and modification. The absence of mocks facilitates comprehensive testing of all involved components.
+
+### 2. Testing the Application Layer
+
+Testing in the Application Layer focuses on **view models**, which are the only classes to be tested in this layer. View models are responsible for managing application logic and state. These tests cover two main areas:
+
+1. **Initialization:** Verifying that each view model initializes correctly and updates the state as intended during the `onInit` phase.
+2. **Method Calls:** Ensuring that the state updates correctly after specific methods are called, often triggered by user interactions like form submissions.
+
+**Examples:**
+- Tests for `ProductListViewModel` ensure correct initialization and accurate product list retrieval.
+- `ContactUsViewModel` tests validate both failed and successful form submissions.
+
+### 3. Testing the Presentation Layer
+
+Presentation Layer tests explicitly focus on testing **views**, which are the only classes to be tested in this layer. These tests ensure that views are rendered correctly and respond as expected to user interactions. Leveraging VueWrapper, these tests involve mounting the views and checking for the expected behavior.
+
+**Examples:**
+- `ContactUsView` tests include validation checks for form submissions and verification of the correct rendering of UI components.
+
+### 4. Vitest for Testing
+
+To further enhance our testing capabilities, we will be incorporating **vitest** as part of our testing suite. Vitest provides additional features and tools that complement our existing testing methodologies, offering a more comprehensive approach to ensuring the robustness of our application.
+
+## Conclusion
+
+This testing approach, now augmented by **vitest**, provides a comprehensive evaluation of the application, covering data operations, application logic, and user interface interactions. It instills confidence in the software's reliability and correctness, maintaining a high standard of quality throughout the development lifecycle. The strategy ensures that **every major functionality** in each layer undergoes testing, offering a thorough and robust testing coverage.

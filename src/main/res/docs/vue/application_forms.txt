@@ -1,0 +1,96 @@
+# Application Layer - Forms Documentation
+
+## Overview
+
+Forms within the application layer are essential components for handling user input, validation, and interaction with the backend. They provide a structured and modular approach to managing data entry and ensuring the integrity of the information submitted by users. This documentation offers examples that developers can refer to when creating and utilizing forms within the project architecture.
+
+## Forms
+
+### 1. Contact Us Form
+
+As an illustration of a form designed for user interaction in the context of contacting customer support or making inquiries, the `ContactUsForm` class serves as a reference. Extending the `Form` class, it includes various fields for capturing user information such as name, email, phone number, message, and age. Below is a developer-friendly example:
+
+```typescript
+// src/apps/core/application/forms/contactUsForm.ts
+import Field, { TextField } from "@/common/forms/fields";
+import Form from "@/common/forms/form";
+
+export default class ContactUsForm extends Form {
+
+    firstName = new TextField();
+    lastName = new TextField();
+    email = new TextField(true, async (value: string) => {
+        // Custom email validation logic
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(value)) {
+            return null;
+        }
+        return "Please enter a valid e-mail";
+    });
+    phone = new TextField();
+    message = new TextField();
+    age = new Field<number>(true, async (value: number) => {
+        // Custom age validation logic
+        if (value < 0) {
+            return "Age has to be positive";
+        }
+        return null;
+    });
+
+    getFields(): Field<any>[] {
+        return [
+            this.firstName,
+            this.lastName,
+            this.email,
+            this.phone,
+            this.message,
+            this.age
+        ];
+    }
+}
+```
+
+Developers can use this `ContactUsForm` example as a starting point for creating forms that handle user input seamlessly within their application layer.
+
+### 2. User Registration Form
+
+For scenarios involving user registration, developers can refer to the `UserRegistrationForm` class. This class can be adapted and extended for user-related data entry, including fields for username, email, and password. Below is an example:
+
+```typescript
+// src/apps/core/application/forms/userRegistrationForm.ts
+import Field, { TextField, PasswordField } from "@/common/forms/fields";
+import Form from "@/common/forms/form";
+
+export default class UserRegistrationForm extends Form {
+
+    username = new TextField();
+    email = new TextField(true, async (value: string) => {
+        // Custom email validation logic
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(value)) {
+            return null;
+        }
+        return "Please enter a valid e-mail";
+    });
+    password = new TextField(true, async (value: string) => {
+        if(value.length < 8){
+            return "Password should be at least 8 characters";
+        }
+        return null;
+    });
+
+    getFields(): Field<any>[] {
+        return [
+            this.username,
+            this.email,
+            this.password
+        ];
+    }
+}
+```
+
+Developers can leverage the `UserRegistrationForm` example as a template for creating forms tailored to the specific data entry requirements of their project. By customizing fields and validation logic, forms become versatile tools for handling user input within the application layer.
+
+## Conclusion
+
+Forms within the application layer play a crucial role in managing user input and ensuring data integrity. Developers can follow these examples, adapting and extending them based on the specific requirements of their project, to maintain a standardized and modular approach to form handling within the project architecture.

@@ -1,0 +1,75 @@
+# Project Documentation: Django with Django Restframework
+
+Welcome to the documentation for our project, combining the power of Django framework with Django Restframework. This documentation serves as a guide to comprehend the project's structure, emphasizing the organization of various components within the system.
+
+## Project Structure Overview
+
+The project adheres to a modular design, with functionalities organized into smaller units referred to as "apps." Each app encapsulates essential components, including models, serializers, views, and URLs. This modular approach enhances maintainability and allows for a clear separation of concerns.
+
+### App Components
+
+1. **Models:**
+   - Organized in the `models` folder within each app.
+   - Django Models for data storage, with each model residing in its own dedicated file.
+   - Imported collectively in `apps/${appname}/models/__init__.py`. (Note: This is important and relevant for model creation tasks, and the models can't be migrated if not imported from the __init__.py)
+
+2. **Serializers:**
+   - Located in the `serializers` folder within each app.
+   - Utilizes Django Restframework serializers for tasks such as validation and data transformation.
+   - Each serializer is stored in its respective file.
+
+3. **Views:**
+   - Housed in the `views` folder within each app.
+   - Comprises Django Restframework APIViews responsible for handling the app's business logic.
+   - Each view is stored in its own dedicated file.
+
+4. **URLs:**
+   - URL mappings to views within the app are distributed across multiple files.
+   - Each app's `urls.py` contains the mappings for that specific app.
+   - Later included in the main `urls.py` using Django's include feature.
+
+### Development Workflow
+
+To build a specific functionality within an app, follow these general steps:
+
+1. Write the required models for the functionality, stored in `apps/${appname}/models/`. Skip if models are unnecessary.
+2. Develop the necessary serializers for the functionality, stored in `apps/${appname}/serializers/`. (Note: Serializers can be utilized for validation, and a model or Python class is not necessary for serialization.)
+3. Implement the required views for the functionality, stored in `apps/${appname}/views/`.
+4. Map the views to URLs within the app's dedicated `urls.py`.
+5. Include the app's `urls.py` in the main `urls.py`. If already done, this step can be skipped.
+
+## Project Folder Structure
+
+```
+.
+├── apps
+│   ├── app1
+│   │   ├── __init__.py
+│   │   ├── models
+│   │   │   ├── __init__.py
+│   │   │   ├── model1.py
+│   │   │   └── model2.py
+│   │   ├── serializers
+│   │   │   ├── __init__.py
+│   │   │   ├── serializer1.py
+│   │   │   └── serializer2.py
+│   │   ├── urls.py
+│   │   └── views
+│   │       ├── __init__.py
+│   │       ├── view1.py
+│   │       └── view2.py
+│   ├── app2
+│   │   # (Similar structure as app1)
+│   └── app3
+│       # (Similar structure as app1)
+├── Dockerfile
+├── manage.py
+└── project
+    ├── asgi.py
+    ├── __init__.py
+    ├── settings.py
+    ├── urls.py
+    └── wsgi.py
+```
+
+This documentation aims to provide a comprehensive understanding of the project's architecture, emphasizing that models, views, and serializers are stored in their respective folders and not consolidated into a single file such as `models.py`.

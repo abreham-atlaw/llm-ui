@@ -5,5 +5,12 @@ from llmui.core.agent.directed.lib.internal_state import InternalState
 
 
 @dataclass
+class Error:
+	test_case: str
+	file_path: str
+	error: str
+
+
+@dataclass
 class ErrorExtractionState(InternalState):
-	extracted_message: typing.Optional[str] = None
+	errors: typing.Optional[typing.List[Error]] = None
